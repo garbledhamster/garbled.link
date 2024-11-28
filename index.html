@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="garbled.link - Your utility hub with tools like notes, timers, code editors, and more.">
   <meta name="author" content="garbledhamster">
-  
+
   <!-- Favicons -->
   <link rel="icon" href="https://garbled.link/assets/images/icons/favicon-16x16.png" sizes="16x16" type="image/png">
   <link rel="icon" href="https://garbled.link/assets/images/icons/favicon-32x32.png" sizes="32x32" type="image/png">
@@ -64,49 +64,103 @@
     <!-- Main Window (Right Column) -->
     <div class="w-2/3 bg-neutral-700 p-6 rounded-md overflow-y-auto h-screen">
       <h2 class="text-2xl font-bold mb-4">Welcome to garbled.link</h2>
-      <p class="mb-4">
-        This space will display the tool content. For now, it's just dummy text. Below are examples of images to demonstrate layout:
-      </p>
+      <p class="mb-4">This space will display the tool content. Below is the integrated Google Login system:</p>
 
-      <!-- Example Image Section -->
+      <!-- Firebase Login System -->
       <div class="bg-neutral-600 p-4 rounded-md mb-6">
-        <h3 class="text-lg font-bold mb-2">Example Image Layout:</h3>
-        <div class="grid grid-cols-2 gap-4">
-          <!-- Image 1 -->
-          <div class="rounded-md overflow-hidden">
-            <img src="https://picsum.photos/300/200" alt="Example Tool Image 1" class="w-full h-full object-cover">
-            <p class="text-sm text-center mt-2">Tool Example 1</p>
-          </div>
-          <!-- Image 2 -->
-          <div class="rounded-md overflow-hidden">
-            <img src="https://picsum.photos/300/200" alt="Example Tool Image 2" class="w-full h-full object-cover">
-            <p class="text-sm text-center mt-2">Tool Example 2</p>
-          </div>
-        </div>
-      </div>
+        <h3 class="text-lg font-bold mb-4">Google Login System</h3>
+        <!-- Loading Indicator -->
+        <div id="loading" class="text-gray-400 mb-4">Checking authentication status...</div>
 
-      <!-- Example Section with Text and Image -->
-      <div class="bg-neutral-600 p-4 rounded-md">
-        <h3 class="text-lg font-bold mb-2">Feature Highlight with Image:</h3>
-        <div class="flex space-x-4">
-          <!-- Image -->
-          <div class="flex-shrink-0 w-32 h-32 rounded-md overflow-hidden">
-            <img src="https://picsum.photos/150" alt="Highlight Image" class="w-full h-full object-cover">
-          </div>
-          <!-- Text -->
-          <div>
-            <p>
-              This section could be used to explain a feature or tool in detail.
-              Add concise and engaging text here to keep users informed.
-            </p>
-          </div>
+        <!-- User Info -->
+        <div id="info" class="hidden text-green-500 mb-4 font-semibold"></div>
+        <div id="user" class="hidden mt-4 flex flex-col items-center">
+          <img id="user-photo" class="w-16 h-16 rounded-full mb-2" src="" alt="Profile Picture">
+          <p id="user-name" class="text-sm"></p>
         </div>
+
+        <!-- Login and Logout Buttons -->
+        <button id="login" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full mt-4">
+          Login with Google
+        </button>
+        <button id="logout" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-full mt-4 hidden">
+          Logout
+        </button>
       </div>
     </div>
   </div>
 
-  <script>
-    // Placeholder for JSON-based tool content loading in future
+  <!-- Firebase Authentication Script -->
+  <script type="module">
+    // Import Firebase functions
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+
+    // Your Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBIOLZo71m_MqtMMLYCBxSfy-ejBOtzN0I",
+      authDomain: "garbled-link.firebaseapp.com",
+      projectId: "garbled-link",
+      storageBucket: "garbled-link.appspot.com",
+      messagingSenderId: "949577796525",
+      appId: "1:949577796525:web:b08dcabdc6cd53eeda2f24"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const provider = new GoogleAuthProvider();
+
+    // DOM Elements
+    const $login = document.getElementById('login');
+    const $logout = document.getElementById('logout');
+    const $loading = document.getElementById('loading');
+    const $info = document.getElementById('info');
+    const $user = document.getElementById('user');
+    const $userPhoto = document.getElementById('user-photo');
+    const $userName = document.getElementById('user-name');
+
+    // Login with Google
+    $login.addEventListener('click', () => {
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          console.log("Logged in as:", result.user.displayName);
+        })
+        .catch((error) => {
+          console.error("Login failed:", error.message);
+        });
+    });
+
+    // Logout
+    $logout.addEventListener('click', () => {
+      signOut(auth)
+        .then(() => {
+          console.log("User logged out");
+        })
+        .catch((error) => {
+          console.error("Logout failed:", error.message);
+        });
+    });
+
+    // Handle Authentication State Changes
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        $loading.classList.add('hidden');
+        $info.textContent = `Welcome, ${user.displayName}!`;
+        $info.classList.remove('hidden');
+        $userPhoto.src = user.photoURL;
+        $userName.textContent = user.displayName;
+        $user.classList.remove('hidden');
+        $login.classList.add('hidden');
+        $logout.classList.remove('hidden');
+      } else {
+        $loading.classList.add('hidden');
+        $info.classList.add('hidden');
+        $user.classList.add('hidden');
+        $login.classList.remove('hidden');
+        $logout.classList.add('hidden');
+      }
+    });
   </script>
 
 </body>
