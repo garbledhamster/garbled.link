@@ -1,7 +1,3 @@
-Here’s a professional and clean `README.md` file tailored for your **garbled.link** project:
-
----
-
 # **garbled.link**
 
 **garbled.link** is your ultimate **utility hub**. It offers a suite of tools to streamline your workflow, including notes, timers, text and code editors, password generators, and more—all in a clean, modern web interface.
