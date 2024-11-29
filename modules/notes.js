@@ -1,46 +1,108 @@
+// modules/notes.js
+export function init() {
+  const mainContent = document.getElementById('main-content');
 
-// assets/modules/notes.js
+  // Clear existing content
+  mainContent.innerHTML = '';
 
-/**
- * Initializes the Notes tool by rendering its UI components.
- * @param {HTMLElement} container - The main content container where the tool will be rendered.
- */
-export function initTool(container) {
-  container.innerHTML = `
-    <h2 class="text-2xl font-bold mb-4">Notes</h2>
-    <textarea id="notes-area" class="w-full h-64 p-2 bg-neutral-800 rounded-md border border-neutral-600 text-neutral-100" placeholder="Write your notes here..."></textarea>
-    <div class="mt-4">
-      <button id="save-notes" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Save Notes</button>
-      <button id="clear-notes" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2">Clear Notes</button>
+  // Create the notes interface
+  mainContent.innerHTML = `
+    <div class="space-y-4">
+      <h2 class="text-2xl font-bold">Notes</h2>
+      <div>
+        <button id="add-note-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Add Note
+        </button>
+      </div>
+      <ul id="notes-list" class="space-y-2">
+        <!-- Notes will be appended here -->
+      </ul>
     </div>
   `;
 
-  // Event Listeners for Save and Clear buttons
-  const saveButton = document.getElementById('save-notes');
-  const clearButton = document.getElementById('clear-notes');
-  const notesArea = document.getElementById('notes-area');
+  // Initialize notes array
+  let notes = JSON.parse(localStorage.getItem('notes')) || [];
 
-  // Save notes to localStorage
-  saveButton.addEventListener('click', () => {
-    const notes = notesArea.value;
-    localStorage.setItem('userNotes', notes);
-    alert('Notes saved successfully!');
+  const notesList = document.getElementById('notes-list');
+  const addNoteBtn = document.getElementById('add-note-btn');
+
+  // Function to render notes
+  const renderNotes = () => {
+    notesList.innerHTML = '';
+    notes.forEach((note, index) => {
+      const noteItem = document.createElement('li');
+      noteItem.className = 'bg-neutral-800 p-4 rounded-md flex justify-between items-center';
+      noteItem.innerHTML = `
+        <span class="text-lg">${note.title || 'Untitled Note'}</span>
+        <div class="space-x-2">
+          <button data-index="${index}" class="edit-note-btn bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">Edit</button>
+          <button data-index="${index}" class="delete-note-btn bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</button>
+        </div>
+      `;
+      notesList.appendChild(noteItem);
+    });
+  };
+
+  // Add note event
+  addNoteBtn.addEventListener('click', () => {
+    const note = {
+      title: '',
+      content: '',
+    };
+    notes.push(note);
+    localStorage.setItem('notes', JSON.stringify(notes));
+    renderNotes();
+    editNote(notes.length - 1);
   });
 
-  // Clear notes from textarea
-  clearButton.addEventListener('click', () => {
-    notesArea.value = '';
+  // Edit note function
+  const editNote = (index) => {
+    const note = notes[index];
+    mainContent.innerHTML = `
+      <div class="space-y-4">
+        <h2 class="text-2xl font-bold">Edit Note</h2>
+        <input id="note-title" class="w-full p-2 rounded-md bg-neutral-800 text-neutral-100" placeholder="Title" value="${note.title}">
+        <textarea id="note-content" class="w-full p-2 rounded-md bg-neutral-800 text-neutral-100 h-64" placeholder="Content">${note.content}</textarea>
+        <div class="space-x-2">
+          <button id="save-note-btn" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Save</button>
+          <button id="cancel-note-btn" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Cancel</button>
+        </div>
+      </div>
+    `;
+
+    // Save note event
+    document.getElementById('save-note-btn').addEventListener('click', () => {
+      note.title = document.getElementById('note-title').value;
+      note.content = document.getElementById('note-content').value;
+      notes[index] = note;
+      localStorage.setItem('notes', JSON.stringify(notes));
+      init();
+    });
+
+    // Cancel editing
+    document.getElementById('cancel-note-btn').addEventListener('click', () => {
+      init();
+    });
+  };
+
+  // Delete note function
+  const deleteNote = (index) => {
+    notes.splice(index, 1);
+    localStorage.setItem('notes', JSON.stringify(notes));
+    renderNotes();
+  };
+
+  // Event delegation for edit and delete buttons
+  notesList.addEventListener('click', (e) => {
+    if (e.target.classList.contains('edit-note-btn')) {
+      const index = e.target.getAttribute('data-index');
+      editNote(index);
+    } else if (e.target.classList.contains('delete-note-btn')) {
+      const index = e.target.getAttribute('data-index');
+      deleteNote(index);
+    }
   });
 
-  // Load saved notes if available
-  const savedNotes = localStorage.getItem('userNotes');
-  if (savedNotes) {
-    notesArea.value = savedNotes;
-  }
+  // Initial render
+  renderNotes();
 }
-
-// Automatically initialize the tool when the script is loaded
-document.addEventListener('DOMContentLoaded', () => {
-  const container = document.getElementById('main-content');
-  initTool(container);
-});
