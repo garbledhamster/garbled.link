@@ -11,39 +11,46 @@
   <link rel="icon" href="https://garbled.link/assets/images/icons/favicon-16x16.png" sizes="16x16" type="image/png">
   <link rel="icon" href="https://garbled.link/assets/images/icons/favicon-32x32.png" sizes="32x32" type="image/png">
   <link rel="icon" href="https://garbled.link/assets/images/icons/android-chrome-192x192.png" sizes="192x192" type="image/png">
-  <link rel="icon" href="https://garbled.link/assets/images/icons/android-chrome-512x512.png" sizes="512x512" type="image/png">
   <link rel="apple-touch-icon" href="https://garbled.link/assets/images/icons/apple-touch-icon.png">
   <link rel="manifest" href="https://garbled.link/manifest.json">
-
-  <!-- Open Graph Meta Tags -->
-  <meta property="og:title" content="garbled.link - Your Personal Utility Belt">
-  <meta property="og:description" content="Simplify your workflow with tools like password generators, GUID creators, and code trimmers.">
-  <meta property="og:image" content="https://garbled.link/assets/images/icons/android-chrome-192x192.png">
-  <meta property="og:url" content="https://garbled.link">
-  <meta property="og:type" content="website">
-
-  <!-- Twitter Meta Tags -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="garbled.link - Your Personal Utility Belt">
-  <meta name="twitter:description" content="Simplify your workflow with tools like password generators, GUID creators, and code trimmers.">
-  <meta name="twitter:image" content="https://garbled.link/assets/images/icons/android-chrome-192x192.png">
 
   <title>garbled.link</title>
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Google Tag Manager -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-SCSZYHSEDL"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-SCSZYHSEDL');
-  </script>
 </head>
 
 <body class="bg-neutral-900 text-neutral-100 font-mono">
+
+  <!-- Top Navigation Bar -->
+  <nav class="bg-neutral-800 p-4 flex justify-between items-center">
+    <div class="text-xl font-bold">
+      garbled.link
+    </div>
+    <div id="auth-section" class="relative">
+      <!-- When Logged Out -->
+      <button id="login-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Login
+      </button>
+
+      <!-- When Logged In -->
+      <div id="user-info" class="hidden flex items-center space-x-2 cursor-pointer">
+        <img id="user-photo" src="" alt="User Photo" class="w-8 h-8 rounded-full">
+        <span id="user-name"></span>
+        <!-- Dropdown Icon -->
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M19 9l-7 7-7-7"></path>
+        </svg>
+      </div>
+
+      <!-- Dropdown Menu -->
+      <div id="dropdown-menu" class="absolute right-0 mt-2 w-32 bg-neutral-700 rounded-md shadow-lg hidden">
+        <button id="logout-button" class="w-full text-left px-4 py-2 hover:bg-neutral-600 rounded-t-md">Logout</button>
+      </div>
+    </div>
+  </nav>
 
   <div class="min-h-screen flex">
     <!-- Tool Selector (Left Column) -->
@@ -63,30 +70,75 @@
 
     <!-- Main Window (Right Column) -->
     <div class="w-2/3 bg-neutral-700 p-6 rounded-md overflow-y-auto h-screen">
-      <h2 class="text-2xl font-bold mb-4">Welcome to garbled.link</h2>
-      <p class="mb-4">This space will display the tool content. Below is the integrated Google Login system:</p>
+      <h2 class="text-2xl font-bold mb-4">Showcase: Website Design</h2>
+      
+      <!-- Hero Section -->
+      <section class="mb-6 bg-neutral-600 p-6 rounded-md">
+        <h3 class="text-xl font-bold mb-2">Hero Section</h3>
+        <p class="mb-2">This is an example of a hero section, perfect for capturing user attention.</p>
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Call to Action</button>
+      </section>
 
-      <!-- Firebase Login System -->
-      <div class="bg-neutral-600 p-4 rounded-md mb-6">
-        <h3 class="text-lg font-bold mb-4">Google Login System</h3>
-        <!-- Loading Indicator -->
-        <div id="loading" class="text-gray-400 mb-4">Checking authentication status...</div>
-
-        <!-- User Info -->
-        <div id="info" class="hidden text-green-500 mb-4 font-semibold"></div>
-        <div id="user" class="hidden mt-4 flex flex-col items-center">
-          <img id="user-photo" class="w-16 h-16 rounded-full mb-2" src="" alt="Profile Picture">
-          <p id="user-name" class="text-sm"></p>
+      <!-- Card Grid -->
+      <section class="mb-6">
+        <h3 class="text-xl font-bold mb-4">Card Grid</h3>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-neutral-800 p-4 rounded-md shadow-md">
+            <h4 class="font-bold mb-2">Card Title 1</h4>
+            <p>This is an example card. Use it to display short pieces of content.</p>
+          </div>
+          <div class="bg-neutral-800 p-4 rounded-md shadow-md">
+            <h4 class="font-bold mb-2">Card Title 2</h4>
+            <p>Cards can be arranged in grids for responsive layouts.</p>
+          </div>
         </div>
+      </section>
 
-        <!-- Login and Logout Buttons -->
-        <button id="login" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full mt-4">
-          Login with Google
-        </button>
-        <button id="logout" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-full mt-4 hidden">
-          Logout
-        </button>
-      </div>
+      <!-- Input Form -->
+      <section class="mb-6">
+        <h3 class="text-xl font-bold mb-4">Input Form</h3>
+        <form>
+          <div class="mb-4">
+            <label for="name" class="block mb-2">Name</label>
+            <input type="text" id="name" class="w-full p-2 bg-neutral-800 rounded-md border border-neutral-600 text-neutral-100">
+          </div>
+          <div class="mb-4">
+            <label for="email" class="block mb-2">Email</label>
+            <input type="email" id="email" class="w-full p-2 bg-neutral-800 rounded-md border border-neutral-600 text-neutral-100">
+          </div>
+          <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Submit</button>
+        </form>
+      </section>
+
+      <!-- Typography Showcase -->
+      <section class="mb-6">
+        <h3 class="text-xl font-bold mb-4">Typography</h3>
+        <p class="mb-2">This is a paragraph demonstrating the base font styles.</p>
+        <p class="italic mb-2">This is italic text.</p>
+        <p class="font-bold mb-2">This is bold text.</p>
+        <p class="text-blue-500">This is colored text.</p>
+      </section>
+
+      <!-- List Showcase -->
+      <section class="mb-6">
+        <h3 class="text-xl font-bold mb-4">Lists</h3>
+        <ul class="list-disc pl-6 mb-4">
+          <li>Unordered list item 1</li>
+          <li>Unordered list item 2</li>
+        </ul>
+        <ol class="list-decimal pl-6">
+          <li>Ordered list item 1</li>
+          <li>Ordered list item 2</li>
+        </ol>
+      </section>
+      
+      <!-- Alert Box -->
+      <section>
+        <h3 class="text-xl font-bold mb-4">Alert Box</h3>
+        <div class="bg-red-600 text-white p-4 rounded-md">
+          <strong>Alert:</strong> This is an example alert box for important messages.
+        </div>
+      </section>
     </div>
   </div>
 
@@ -96,7 +148,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 
-    // Your Firebase configuration
+    // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyBIOLZo71m_MqtMMLYCBxSfy-ejBOtzN0I",
       authDomain: "garbled-link.firebaseapp.com",
@@ -112,16 +164,18 @@
     const provider = new GoogleAuthProvider();
 
     // DOM Elements
-    const $login = document.getElementById('login');
-    const $logout = document.getElementById('logout');
-    const $loading = document.getElementById('loading');
-    const $info = document.getElementById('info');
-    const $user = document.getElementById('user');
-    const $userPhoto = document.getElementById('user-photo');
-    const $userName = document.getElementById('user-name');
+    const loginButton = document.getElementById('login-button');
+    const logoutButton = document.getElementById('logout-button');
+    const userInfo = document.getElementById('user-info');
+    const userPhoto = document.getElementById('user-photo');
+    const userName = document.getElementById('user-name');
+    const dropdownMenu = document.getElementById('dropdown-menu');
+    const authSection = document.getElementById('auth-section');
 
     // Login with Google
-    $login.addEventListener('click', () => {
+    loginButton.addEventListener('click', () => signInWithGoogle());
+
+    function signInWithGoogle() {
       signInWithPopup(auth, provider)
         .then((result) => {
           console.log("Logged in as:", result.user.displayName);
@@ -129,36 +183,41 @@
         .catch((error) => {
           console.error("Login failed:", error.message);
         });
-    });
+    }
 
     // Logout
-    $logout.addEventListener('click', () => {
+    logoutButton.addEventListener('click', () => {
       signOut(auth)
         .then(() => {
-          console.log("User logged out");
+          console.log("User signed out.");
         })
         .catch((error) => {
           console.error("Logout failed:", error.message);
         });
     });
 
+    // Toggle Dropdown Menu
+    userInfo.addEventListener('click', () => {
+      dropdownMenu.classList.toggle('hidden');
+    });
+
+    // Close dropdown when clicking outside
+    window.addEventListener('click', (e) => {
+      if (!authSection.contains(e.target)) {
+        dropdownMenu.classList.add('hidden');
+      }
+    });
+
     // Handle Authentication State Changes
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        $loading.classList.add('hidden');
-        $info.textContent = `Welcome, ${user.displayName}!`;
-        $info.classList.remove('hidden');
-        $userPhoto.src = user.photoURL;
-        $userName.textContent = user.displayName;
-        $user.classList.remove('hidden');
-        $login.classList.add('hidden');
-        $logout.classList.remove('hidden');
+        userPhoto.src = user.photoURL;
+        userName.textContent = user.displayName;
+        userInfo.classList.remove('hidden');
+        loginButton.classList.add('hidden');
       } else {
-        $loading.classList.add('hidden');
-        $info.classList.add('hidden');
-        $user.classList.add('hidden');
-        $login.classList.remove('hidden');
-        $logout.classList.add('hidden');
+        userInfo.classList.add('hidden');
+        loginButton.classList.remove('hidden');
       }
     });
   </script>
