@@ -222,7 +222,7 @@
     });
   </script>
 
-  <!-- Script to Handle Module Loading with Dynamic Import and Fallback -->
+  <!-- Script to Handle Module Loading with Dynamic Import -->
   <script type="module">
     /**
      * Function to display an error message in the main content area.
@@ -247,33 +247,20 @@
         const mainContent = document.getElementById('main-content');
         mainContent.innerHTML = `<p>Loading ${toolName}...</p>`;
 
-        // Attempt to dynamically import the local module
-        const localModule = await import(`./modules/${toolName}.js`);
-        console.log('Local module:', localModule);
-        if (localModule && typeof localModule.init === 'function') {
-          localModule.init();
-          console.log(`${toolName} module loaded successfully from localURL.`);
+        // Dynamically import the external module
+        const moduleURL = `https://garbled.link/modules/${toolName}.js`;
+        const externalModule = await import(moduleURL);
+        console.log('External module:', externalModule);
+        if (externalModule && typeof externalModule.init === 'function') {
+          externalModule.init();
+          console.log(`${toolName} module loaded successfully from externalURL.`);
         } else {
           console.warn(`${toolName} module does not have an init function.`);
           throw new Error(`The ${toolName} module is missing an init function.`);
         }
       } catch (error) {
-        console.warn(`Failed to load modules/${toolName}.js. Attempting to load from fallback URL.`, error);
-        try {
-          // Attempt to dynamically import the fallback module
-          const fallbackModule = await import(`https://garbled.link/modules/${toolName}.js`);
-          console.log('Fallback module:', fallbackModule);
-          if (fallbackModule && typeof fallbackModule.init === 'function') {
-            fallbackModule.init();
-            console.log(`${toolName} module loaded successfully from fallbackURL.`);
-          } else {
-            console.warn(`${toolName} fallback module does not have an init function.`);
-            throw new Error(`The fallback ${toolName} module is missing an init function.`);
-          }
-        } catch (fallbackError) {
-          console.error(`Failed to load fallback script from https://garbled.link/modules/${toolName}.js.`, fallbackError);
-          displayError(`Unable to load the ${toolName} tool. Please try again later.`);
-        }
+        console.error(`Failed to load modules/${toolName}.js from external URL. Error:`, error);
+        displayError(`Unable to load the ${toolName} tool. Please try again later.`);
       }
     };
 
