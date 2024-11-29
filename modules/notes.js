@@ -29,6 +29,10 @@ export function init() {
   // Function to render notes
   const renderNotes = () => {
     notesList.innerHTML = '';
+    if (notes.length === 0) {
+      notesList.innerHTML = '<p class="text-gray-400">No notes available. Click "Add Note" to create one.</p>';
+      return;
+    }
     notes.forEach((note, index) => {
       const noteItem = document.createElement('li');
       noteItem.className = 'bg-neutral-800 p-4 rounded-md flex justify-between items-center';
@@ -72,8 +76,14 @@ export function init() {
 
     // Save note event
     document.getElementById('save-note-btn').addEventListener('click', () => {
-      note.title = document.getElementById('note-title').value;
-      note.content = document.getElementById('note-content').value;
+      const updatedTitle = document.getElementById('note-title').value.trim();
+      const updatedContent = document.getElementById('note-content').value.trim();
+      if (updatedTitle === '' && updatedContent === '') {
+        alert('Cannot save an empty note.');
+        return;
+      }
+      note.title = updatedTitle || 'Untitled Note';
+      note.content = updatedContent;
       notes[index] = note;
       localStorage.setItem('notes', JSON.stringify(notes));
       init();
@@ -87,9 +97,11 @@ export function init() {
 
   // Delete note function
   const deleteNote = (index) => {
-    notes.splice(index, 1);
-    localStorage.setItem('notes', JSON.stringify(notes));
-    renderNotes();
+    if (confirm('Are you sure you want to delete this note?')) {
+      notes.splice(index, 1);
+      localStorage.setItem('notes', JSON.stringify(notes));
+      renderNotes();
+    }
   };
 
   // Event delegation for edit and delete buttons
