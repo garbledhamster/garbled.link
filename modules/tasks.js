@@ -1,80 +1,73 @@
+// modules/tasks.js
+export function init() {
+  const mainContent = document.getElementById('main-content');
 
-// assets/modules/tasks.js
+  // Clear existing content
+  mainContent.innerHTML = '';
 
-/**
- * Initializes the Tasks tool by rendering its UI components.
- * @param {HTMLElement} container - The main content container where the tool will be rendered.
- */
-export function initTool(container) {
-  container.innerHTML = `
-    <h2 class="text-2xl font-bold mb-4">Tasks</h2>
-    <div class="flex mb-4">
-      <input type="text" id="task-input" class="w-full p-2 bg-neutral-800 rounded-md border border-neutral-600 text-neutral-100" placeholder="Enter a new task">
-      <button id="add-task" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2">Add</button>
+  // Create the tasks interface
+  mainContent.innerHTML = `
+    <div class="space-y-4">
+      <h2 class="text-2xl font-bold">Tasks</h2>
+      <div class="flex space-x-2">
+        <input id="task-input" class="flex-1 p-2 rounded-md bg-neutral-800 text-neutral-100" placeholder="Add a new task">
+        <button id="add-task-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Add
+        </button>
+      </div>
+      <ul id="tasks-list" class="space-y-2">
+        <!-- Tasks will be appended here -->
+      </ul>
     </div>
-    <ul id="task-list" class="list-disc pl-6">
-      <!-- Tasks will be appended here -->
-    </ul>
   `;
 
-  // Event Listeners for Add button
-  const addButton = document.getElementById('add-task');
+  // Initialize tasks array
+  let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+  const tasksList = document.getElementById('tasks-list');
+  const addTaskBtn = document.getElementById('add-task-btn');
   const taskInput = document.getElementById('task-input');
-  const taskList = document.getElementById('task-list');
 
-  // Load saved tasks from localStorage
-  const savedTasks = JSON.parse(localStorage.getItem('userTasks')) || [];
-  savedTasks.forEach(task => addTaskToList(task));
-
-  // Add Task Function
-  const addTask = () => {
-    const taskText = taskInput.value.trim();
-    if (taskText === '') return;
-
-    addTaskToList(taskText);
-    savedTasks.push(taskText);
-    localStorage.setItem('userTasks', JSON.stringify(savedTasks));
-    taskInput.value = '';
-  };
-
-  // Function to create and append a task to the list
-  const addTaskToList = (taskText) => {
-    const li = document.createElement('li');
-    li.className = 'flex items-center space-x-2';
-
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.className = 'form-checkbox h-5 w-5 text-blue-600';
-
-    const span = document.createElement('span');
-    span.textContent = taskText;
-
-    // Remove task on double-click
-    li.addEventListener('dblclick', () => {
-      taskList.removeChild(li);
-      const index = savedTasks.indexOf(taskText);
-      if (index > -1) savedTasks.splice(index, 1);
-      localStorage.setItem('userTasks', JSON.stringify(savedTasks));
+  // Function to render tasks
+  const renderTasks = () => {
+    tasksList.innerHTML = '';
+    tasks.forEach((task, index) => {
+      const taskItem = document.createElement('li');
+      taskItem.className = 'flex items-center bg-neutral-800 p-4 rounded-md';
+      taskItem.innerHTML = `
+        <input type="checkbox" data-index="${index}" class="mr-2" ${task.completed ? 'checked' : ''}>
+        <span class="flex-1 ${task.completed ? 'line-through text-gray-500' : ''}">${task.text}</span>
+        <button data-index="${index}" class="delete-task-btn bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</button>
+      `;
+      tasksList.appendChild(taskItem);
     });
-
-    li.appendChild(checkbox);
-    li.appendChild(span);
-    taskList.appendChild(li);
   };
 
-  // Add task on button click
-  addButton.addEventListener('click', addTask);
-
-  // Add task on Enter key press
-  taskInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      addTask();
+  // Add task event
+  addTaskBtn.addEventListener('click', () => {
+    const taskText = taskInput.value.trim();
+    if (taskText) {
+      tasks.push({ text: taskText, completed: false });
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+      taskInput.value = '';
+      renderTasks();
     }
   });
-}
 
-// Automatically initialize the tool when the script is loaded
-document.addEventListener('DOMContentLoaded', () => {
-  const container = document.getElementById('main-content');
-  initTool(container);
-});
+  // Event delegation for task interactions
+  tasksList.addEventListener('click', (e) => {
+    const index = e.target.getAttribute('data-index');
+    if (e.target.type === 'checkbox') {
+      tasks[index].completed = e.target.checked;
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+      renderTasks();
+    } else if (e.target.classList.contains('delete-task-btn')) {
+      tasks.splice(index, 1);
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+      renderTasks();
+    }
+  });
+
+  // Initial render
+  renderTasks();
+}
