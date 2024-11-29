@@ -21,38 +21,25 @@
 
   <!-- Custom Styles -->
   <style>
-    /* Ensure the body takes the full viewport height and uses flex layout */
-    body {
-      margin: 0;
-      height: 100vh;
+    /* Ensure the container takes full viewport height */
+    .container {
       display: flex;
-      flex-direction: column;
+      height: calc(100vh - 64px); /* Adjust if nav height changes */
     }
 
-    /* Container for main content below the navbar */
-    .main-container {
-      display: flex;
-      flex: 1;
-      height: 100%;
-    }
-
-    /* Left Column Styling */
+    /* Prevent the left column from shrinking */
     .left-column {
-      flex: 0 0 33.333%; /* 1/3 of the width */
-      background-color: #1c1c1c; /* Tailwind's bg-neutral-800 */
-      padding: 1rem;
-      overflow-y: auto; /* Optional: If content overflows */
+      flex: 0 0 33.333%;
     }
 
-    /* Right Column Styling */
+    /* Allow the right column to take the remaining space and scroll */
     .right-column {
       flex: 1;
-      background-color: #2d2d2d; /* Tailwind's bg-neutral-700 */
-      padding: 1.5rem;
       overflow-y: auto;
     }
 
-    /* Optional: Custom scrollbar styling for the right column */
+    /* Optional: Hide scrollbar for aesthetic purposes */
+    /* For Webkit browsers */
     .right-column::-webkit-scrollbar {
       width: 8px;
     }
@@ -62,6 +49,7 @@
       border-radius: 4px;
     }
 
+    /* For Firefox */
     .right-column {
       scrollbar-width: thin;
       scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
@@ -101,10 +89,10 @@
     </div>
   </nav>
 
-  <!-- Main Content Container -->
-  <div class="main-container pt-16"> <!-- pt-16 to offset the fixed navbar height (4rem) -->
+  <!-- Fullscreen Container -->
+  <div class="container pt-16"> <!-- pt-16 to offset the fixed navbar height -->
     <!-- Tool Selector (Left Column) -->
-    <div class="left-column">
+    <div class="left-column bg-neutral-800 p-4 rounded-md">
       <h1 class="text-xl font-bold mb-4">Utility Belt</h1>
       <ul class="space-y-3">
         <li><button class="tool-loader w-full text-left hover:text-blue-500 transition" data-tool="notes">1. Notes</button></li>
@@ -119,7 +107,7 @@
     </div>
 
     <!-- Main Window (Right Column) -->
-    <div class="right-column">
+    <div class="right-column bg-neutral-700 p-6 rounded-md overflow-y-auto">
       <div id="main-content">
         <h2 class="text-2xl font-bold mb-4">Welcome to garbled.link</h2>
         <p>Select a tool from the Utility Belt to get started.</p>
@@ -240,12 +228,6 @@
         document.body.appendChild(fallbackScript);
       };
 
-      // Define onload handler to initialize the tool
-      script.onload = () => {
-        // Assuming each module initializes itself upon loading
-        // Alternatively, you can implement an event or callback mechanism
-      };
-
       // Append the script to the body
       document.body.appendChild(script);
     };
@@ -265,15 +247,23 @@
 
     /**
      * Function to load a tool and display its content.
-     * @param {string} toolName - The name of the tool to load.
+     * Assumes that each tool module exports a function called `initTool` that takes the main content element as a parameter.
+     * Example:
+     * // In notes.js
+     * export function initTool(container) {
+     *   container.innerHTML = '<h2>Notes Tool Loaded</h2>';
+     * }
      */
     const loadTool = (toolName) => {
-      // Clear the main content area and show a loading message
+      // Clear the main content area
       const mainContent = document.getElementById('main-content');
       mainContent.innerHTML = `<p>Loading ${toolName}...</p>`;
 
       // Load the script with fallback
       loadScriptWithFallback(toolName);
+
+      // After the script is loaded, the tool should handle updating the main content
+      // Alternatively, you can listen for events or use callbacks
     };
 
     // Add event listeners to tool buttons
