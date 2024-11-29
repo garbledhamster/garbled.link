@@ -70,6 +70,16 @@
       scrollbar-width: thin;
       scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
     }
+
+    /* Additional Styles for QoL */
+    .hidden {
+      display: none;
+    }
+
+    /* Smooth transitions */
+    .transition {
+      transition: all 0.3s ease;
+    }
   </style>
 </head>
 
@@ -239,22 +249,26 @@
 
         // Attempt to dynamically import the local module
         const localModule = await import(`./modules/${toolName}.js`);
+        console.log('Local module:', localModule);
         if (localModule && typeof localModule.init === 'function') {
           localModule.init();
           console.log(`${toolName} module loaded successfully from localURL.`);
         } else {
           console.warn(`${toolName} module does not have an init function.`);
+          throw new Error(`The ${toolName} module is missing an init function.`);
         }
       } catch (error) {
         console.warn(`Failed to load modules/${toolName}.js. Attempting to load from fallback URL.`, error);
         try {
           // Attempt to dynamically import the fallback module
           const fallbackModule = await import(`https://garbled.link/modules/${toolName}.js`);
+          console.log('Fallback module:', fallbackModule);
           if (fallbackModule && typeof fallbackModule.init === 'function') {
             fallbackModule.init();
             console.log(`${toolName} module loaded successfully from fallbackURL.`);
           } else {
             console.warn(`${toolName} fallback module does not have an init function.`);
+            throw new Error(`The fallback ${toolName} module is missing an init function.`);
           }
         } catch (fallbackError) {
           console.error(`Failed to load fallback script from https://garbled.link/modules/${toolName}.js.`, fallbackError);
