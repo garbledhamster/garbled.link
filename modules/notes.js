@@ -1,120 +1,164 @@
 // modules/notes.js
-export function init() {
-  const mainContent = document.getElementById('main-content');
 
-  // Clear existing content
-  mainContent.innerHTML = '';
-
-  // Create the notes interface
-  mainContent.innerHTML = `
-    <div class="space-y-4">
-      <h2 class="text-2xl font-bold">Notes</h2>
-      <div>
-        <button id="add-note-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Add Note
-        </button>
-      </div>
-      <ul id="notes-list" class="space-y-2">
-        <!-- Notes will be appended here -->
-      </ul>
-    </div>
-  `;
-
-  // Initialize notes array
-  let notes = JSON.parse(localStorage.getItem('notes')) || [];
-
-  const notesList = document.getElementById('notes-list');
-  const addNoteBtn = document.getElementById('add-note-btn');
-
-  // Function to render notes
-  const renderNotes = () => {
-    notesList.innerHTML = '';
-    if (notes.length === 0) {
-      notesList.innerHTML = '<p class="text-gray-400">No notes available. Click "Add Note" to create one.</p>';
-      return;
-    }
-    notes.forEach((note, index) => {
-      const noteItem = document.createElement('li');
-      noteItem.className = 'bg-neutral-800 p-4 rounded-md flex justify-between items-center';
-      noteItem.innerHTML = `
-        <span class="text-lg">${note.title || 'Untitled Note'}</span>
-        <div class="space-x-2">
-          <button data-index="${index}" class="edit-note-btn bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">Edit</button>
-          <button data-index="${index}" class="delete-note-btn bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</button>
-        </div>
-      `;
-      notesList.appendChild(noteItem);
-    });
-  };
-
-  // Add note event
-  addNoteBtn.addEventListener('click', () => {
-    const note = {
-      title: '',
-      content: '',
-    };
-    notes.push(note);
-    localStorage.setItem('notes', JSON.stringify(notes));
-    renderNotes();
-    editNote(notes.length - 1);
-  });
-
-  // Edit note function
-  const editNote = (index) => {
-    const note = notes[index];
-    mainContent.innerHTML = `
-      <div class="space-y-4">
-        <h2 class="text-2xl font-bold">Edit Note</h2>
-        <input id="note-title" class="w-full p-2 rounded-md bg-neutral-800 text-neutral-100" placeholder="Title" value="${note.title}">
-        <textarea id="note-content" class="w-full p-2 rounded-md bg-neutral-800 text-neutral-100 h-64" placeholder="Content">${note.content}</textarea>
-        <div class="space-x-2">
-          <button id="save-note-btn" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Save</button>
-          <button id="cancel-note-btn" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Cancel</button>
-        </div>
+/**
+ * Initializes the Notes tool by rendering its UI components.
+ * @param {HTMLElement} container - The main content container where the tool will be rendered.
+ */
+export function initTool(container) {
+  // Check if Firebase Auth is available
+  if (!window.auth) {
+    container.innerHTML = `
+      <div class="bg-red-600 text-white p-4 rounded-md">
+        <strong>Error:</strong> Firebase Authentication is not initialized. Please ensure you are logged in.
       </div>
     `;
+    return;
+  }
 
-    // Save note event
-    document.getElementById('save-note-btn').addEventListener('click', () => {
-      const updatedTitle = document.getElementById('note-title').value.trim();
-      const updatedContent = document.getElementById('note-content').value.trim();
-      if (updatedTitle === '' && updatedContent === '') {
-        alert('Cannot save an empty note.');
+  // Reference to the auth instance
+  const auth = window.auth;
+
+  // Function to render the Notes UI
+  const renderNotesUI = (user) => {
+    // Unique key for storing notes per user
+    const storageKey = `notes_${user.uid}`;
+
+    // Retrieve notes from localStorage
+    const savedNotes = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+    // HTML structure for Notes tool
+    container.innerHTML = `
+      <h2 class="text-2xl font-bold mb-4">Notes</h2>
+      <div class="mb-4 flex">
+        <input type="text" id="new-note-input" class="flex-1 p-2 bg-neutral-800 rounded-l-md border border-neutral-600 text-neutral-100" placeholder="Enter a new note">
+        <button id="add-note-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r-md">Add Note</button>
+      </div>
+      <ul id="notes-list" class="space-y-2">
+        ${savedNotes.map((note, index) => `
+          <li class="flex justify-between items-center bg-neutral-800 p-2 rounded-md">
+            <span>${escapeHTML(note)}</span>
+            <button data-index="${index}" class="remove-note-button bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Remove</button>
+          </li>
+        `).join('')}
+      </ul>
+    `;
+
+    // DOM Elements
+    const addNoteButton = document.getElementById('add-note-button');
+    const newNoteInput = document.getElementById('new-note-input');
+    const notesList = document.getElementById('notes-list');
+
+    // Function to escape HTML to prevent XSS
+    function escapeHTML(str) {
+      return str.replace(/[&<>'"]/g, (tag) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;',
+      }[tag]));
+    }
+
+    // Function to save notes to localStorage
+    const saveNotes = (notes) => {
+      localStorage.setItem(storageKey, JSON.stringify(notes));
+    };
+
+    // Function to add a new note
+    const addNote = () => {
+      const noteText = newNoteInput.value.trim();
+      if (noteText === '') {
+        alert('Please enter a note.');
         return;
       }
-      note.title = updatedTitle || 'Untitled Note';
-      note.content = updatedContent;
-      notes[index] = note;
-      localStorage.setItem('notes', JSON.stringify(notes));
-      init();
+
+      // Retrieve current notes
+      const currentNotes = JSON.parse(localStorage.getItem(storageKey)) || [];
+      currentNotes.push(noteText);
+      saveNotes(currentNotes);
+
+      // Append the new note to the UI
+      const newNoteElement = document.createElement('li');
+      newNoteElement.className = 'flex justify-between items-center bg-neutral-800 p-2 rounded-md';
+      newNoteElement.innerHTML = `
+        <span>${escapeHTML(noteText)}</span>
+        <button data-index="${currentNotes.length - 1}" class="remove-note-button bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Remove</button>
+      `;
+      notesList.appendChild(newNoteElement);
+
+      // Clear the input field
+      newNoteInput.value = '';
+    };
+
+    // Function to remove a note
+    const removeNote = (index) => {
+      // Retrieve current notes
+      let currentNotes = JSON.parse(localStorage.getItem(storageKey)) || [];
+      if (index < 0 || index >= currentNotes.length) return;
+
+      // Remove the note from the array
+      currentNotes.splice(index, 1);
+      saveNotes(currentNotes);
+
+      // Re-render the notes list
+      renderNotesUI(user);
+    };
+
+    // Event Listener for Add Note button
+    addNoteButton.addEventListener('click', addNote);
+
+    // Event Listener for Enter key on input field
+    newNoteInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        addNote();
+      }
     });
 
-    // Cancel editing
-    document.getElementById('cancel-note-btn').addEventListener('click', () => {
-      init();
+    // Event Delegation for Remove Note buttons
+    notesList.addEventListener('click', (e) => {
+      if (e.target && e.target.matches('button.remove-note-button')) {
+        const index = parseInt(e.target.getAttribute('data-index'), 10);
+        if (!isNaN(index)) {
+          removeNote(index);
+        }
+      }
     });
   };
 
-  // Delete note function
-  const deleteNote = (index) => {
-    if (confirm('Are you sure you want to delete this note?')) {
-      notes.splice(index, 1);
-      localStorage.setItem('notes', JSON.stringify(notes));
-      renderNotes();
-    }
+  // Function to render access denied message
+  const renderAccessDenied = () => {
+    container.innerHTML = `
+      <div class="bg-red-600 text-white p-4 rounded-md">
+        <strong>Access Denied:</strong> Please log in to access your notes.
+      </div>
+    `;
   };
 
-  // Event delegation for edit and delete buttons
-  notesList.addEventListener('click', (e) => {
-    if (e.target.classList.contains('edit-note-btn')) {
-      const index = e.target.getAttribute('data-index');
-      editNote(index);
-    } else if (e.target.classList.contains('delete-note-btn')) {
-      const index = e.target.getAttribute('data-index');
-      deleteNote(index);
+  // Initial Render based on Authentication State
+  const initialUser = auth.currentUser;
+  if (initialUser) {
+    renderNotesUI(initialUser);
+  } else {
+    renderAccessDenied();
+  }
+
+  // Listen for Authentication State Changes
+  auth.onAuthStateChanged((user) => {
+    if (user) {
+      renderNotesUI(user);
+    } else {
+      renderAccessDenied();
     }
   });
-
-  // Initial render
-  renderNotes();
 }
+
+/**
+ * Automatically initialize the tool when the script is loaded.
+ * Ensures that the tool is initialized only when its script is loaded dynamically.
+ */
+document.addEventListener('DOMContentLoaded', () => {
+  const container = document.getElementById('main-content');
+  if (container) {
+    initTool(container);
+  }
+});
