@@ -220,7 +220,7 @@
      */
     const loadScriptWithFallback = (toolName) => {
       // Define local and fallback URLs
-      const localURL = `./modules/${toolName}.js`;
+      const localURL = `modules/${toolName}.js`;
       const publicURL = `https://garbled.link/modules/${toolName}.js`;
       // Create the script element
       const script = document.createElement('script');
