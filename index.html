@@ -241,9 +241,10 @@
         const localModule = await import(`./modules/${toolName}.js`);
         if (localModule && typeof localModule.init === 'function') {
           localModule.init();
-          console.log(`${toolName} module loaded successfully from localURL.`);
+          console.log(`${toolName} module loaded successfully from local URL.`);
         } else {
           console.warn(`${toolName} module does not have an init function.`);
+          throw new Error(`The module "${toolName}.js" does not export an init function.`);
         }
       } catch (error) {
         console.warn(`Failed to load modules/${toolName}.js. Attempting to load from fallback URL.`, error);
@@ -252,9 +253,10 @@
           const fallbackModule = await import(`https://garbled.link/modules/${toolName}.js`);
           if (fallbackModule && typeof fallbackModule.init === 'function') {
             fallbackModule.init();
-            console.log(`${toolName} module loaded successfully from fallbackURL.`);
+            console.log(`${toolName} module loaded successfully from fallback URL.`);
           } else {
             console.warn(`${toolName} fallback module does not have an init function.`);
+            throw new Error(`The fallback module "${toolName}.js" does not export an init function.`);
           }
         } catch (fallbackError) {
           console.error(`Failed to load fallback script from https://garbled.link/modules/${toolName}.js.`, fallbackError);
