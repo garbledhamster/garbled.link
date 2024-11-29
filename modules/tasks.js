@@ -1,88 +1,164 @@
-// modules/tasks.js
-export function init() {
-  const mainContent = document.getElementById('main-content');
+// modules/notes.js
 
-  // Clear existing content
-  mainContent.innerHTML = '';
-
-  // Create the tasks interface
-  mainContent.innerHTML = `
-    <div class="space-y-4">
-      <h2 class="text-2xl font-bold">Tasks</h2>
-      <div class="flex space-x-2">
-        <input id="task-input" class="flex-1 p-2 rounded-md bg-neutral-800 text-neutral-100" placeholder="Add a new task">
-        <button id="add-task-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Add
-        </button>
+/**
+ * Initializes the Notes tool by rendering its UI components.
+ * @param {HTMLElement} container - The main content container where the tool will be rendered.
+ */
+export function initTool(container) {
+  // Check if Firebase Auth is available
+  if (!window.auth) {
+    container.innerHTML = `
+      <div class="bg-red-600 text-white p-4 rounded-md">
+        <strong>Error:</strong> Firebase Authentication is not initialized. Please ensure you are logged in.
       </div>
-      <ul id="tasks-list" class="space-y-2">
-        <!-- Tasks will be appended here -->
+    `;
+    return;
+  }
+
+  // Reference to the auth instance
+  const auth = window.auth;
+
+  // Function to render the Notes UI
+  const renderNotesUI = (user) => {
+    // Unique key for storing notes per user
+    const storageKey = `notes_${user.uid}`;
+
+    // Retrieve notes from localStorage
+    const savedNotes = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+    // HTML structure for Notes tool
+    container.innerHTML = `
+      <h2 class="text-2xl font-bold mb-4">Notes</h2>
+      <div class="mb-4 flex">
+        <input type="text" id="new-note-input" class="flex-1 p-2 bg-neutral-800 rounded-l-md border border-neutral-600 text-neutral-100" placeholder="Enter a new note">
+        <button id="add-note-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r-md">Add Note</button>
+      </div>
+      <ul id="notes-list" class="space-y-2">
+        ${savedNotes.map((note, index) => `
+          <li class="flex justify-between items-center bg-neutral-800 p-2 rounded-md">
+            <span>${escapeHTML(note)}</span>
+            <button data-index="${index}" class="remove-note-button bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Remove</button>
+          </li>
+        `).join('')}
       </ul>
-    </div>
-  `;
+    `;
 
-  // Initialize tasks array
-  let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    // DOM Elements
+    const addNoteButton = document.getElementById('add-note-button');
+    const newNoteInput = document.getElementById('new-note-input');
+    const notesList = document.getElementById('notes-list');
 
-  const tasksList = document.getElementById('tasks-list');
-  const addTaskBtn = document.getElementById('add-task-btn');
-  const taskInput = document.getElementById('task-input');
-
-  // Function to render tasks
-  const renderTasks = () => {
-    tasksList.innerHTML = '';
-    if (tasks.length === 0) {
-      tasksList.innerHTML = '<p class="text-gray-400">No tasks available. Add a new task to get started.</p>';
-      return;
+    // Function to escape HTML to prevent XSS
+    function escapeHTML(str) {
+      return str.replace(/[&<>'"]/g, (tag) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;',
+      }[tag]));
     }
-    tasks.forEach((task, index) => {
-      const taskItem = document.createElement('li');
-      taskItem.className = 'flex items-center bg-neutral-800 p-4 rounded-md';
-      taskItem.innerHTML = `
-        <input type="checkbox" data-index="${index}" class="mr-2" ${task.completed ? 'checked' : ''}>
-        <span class="flex-1 ${task.completed ? 'line-through text-gray-500' : ''}">${task.text}</span>
-        <button data-index="${index}" class="delete-task-btn bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</button>
+
+    // Function to save notes to localStorage
+    const saveNotes = (notes) => {
+      localStorage.setItem(storageKey, JSON.stringify(notes));
+    };
+
+    // Function to add a new note
+    const addNote = () => {
+      const noteText = newNoteInput.value.trim();
+      if (noteText === '') {
+        alert('Please enter a note.');
+        return;
+      }
+
+      // Retrieve current notes
+      const currentNotes = JSON.parse(localStorage.getItem(storageKey)) || [];
+      currentNotes.push(noteText);
+      saveNotes(currentNotes);
+
+      // Append the new note to the UI
+      const newNoteElement = document.createElement('li');
+      newNoteElement.className = 'flex justify-between items-center bg-neutral-800 p-2 rounded-md';
+      newNoteElement.innerHTML = `
+        <span>${escapeHTML(noteText)}</span>
+        <button data-index="${currentNotes.length - 1}" class="remove-note-button bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Remove</button>
       `;
-      tasksList.appendChild(taskItem);
+      notesList.appendChild(newNoteElement);
+
+      // Clear the input field
+      newNoteInput.value = '';
+    };
+
+    // Function to remove a note
+    const removeNote = (index) => {
+      // Retrieve current notes
+      let currentNotes = JSON.parse(localStorage.getItem(storageKey)) || [];
+      if (index < 0 || index >= currentNotes.length) return;
+
+      // Remove the note from the array
+      currentNotes.splice(index, 1);
+      saveNotes(currentNotes);
+
+      // Re-render the notes list
+      renderNotesUI(user);
+    };
+
+    // Event Listener for Add Note button
+    addNoteButton.addEventListener('click', addNote);
+
+    // Event Listener for Enter key on input field
+    newNoteInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        addNote();
+      }
+    });
+
+    // Event Delegation for Remove Note buttons
+    notesList.addEventListener('click', (e) => {
+      if (e.target && e.target.matches('button.remove-note-button')) {
+        const index = parseInt(e.target.getAttribute('data-index'), 10);
+        if (!isNaN(index)) {
+          removeNote(index);
+        }
+      }
     });
   };
 
-  // Add task event
-  addTaskBtn.addEventListener('click', () => {
-    const taskText = taskInput.value.trim();
-    if (taskText) {
-      tasks.push({ text: taskText, completed: false });
-      localStorage.setItem('tasks', JSON.stringify(tasks));
-      taskInput.value = '';
-      renderTasks();
+  // Function to render access denied message
+  const renderAccessDenied = () => {
+    container.innerHTML = `
+      <div class="bg-red-600 text-white p-4 rounded-md">
+        <strong>Access Denied:</strong> Please log in to access your notes.
+      </div>
+    `;
+  };
+
+  // Initial Render based on Authentication State
+  const initialUser = auth.currentUser;
+  if (initialUser) {
+    renderNotesUI(initialUser);
+  } else {
+    renderAccessDenied();
+  }
+
+  // Listen for Authentication State Changes
+  auth.onAuthStateChanged((user) => {
+    if (user) {
+      renderNotesUI(user);
     } else {
-      alert('Please enter a task.');
+      renderAccessDenied();
     }
   });
-
-  // Enable adding task with Enter key
-  taskInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      addTaskBtn.click();
-    }
-  });
-
-  // Event delegation for task interactions
-  tasksList.addEventListener('click', (e) => {
-    const index = e.target.getAttribute('data-index');
-    if (e.target.type === 'checkbox') {
-      tasks[index].completed = e.target.checked;
-      localStorage.setItem('tasks', JSON.stringify(tasks));
-      renderTasks();
-    } else if (e.target.classList.contains('delete-task-btn')) {
-      if (confirm('Are you sure you want to delete this task?')) {
-        tasks.splice(index, 1);
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-        renderTasks();
-      }
-    }
-  });
-
-  // Initial render
-  renderTasks();
 }
+
+/**
+ * Automatically initialize the tool when the script is loaded.
+ * Ensures that the tool is initialized only when its script is loaded dynamically.
+ */
+document.addEventListener('DOMContentLoaded', () => {
+  const container = document.getElementById('main-content');
+  if (container) {
+    initTool(container);
+  }
+});
