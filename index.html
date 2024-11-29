@@ -134,16 +134,9 @@
   <!-- Firebase Authentication Script -->
   <script type="module">
     // Import Firebase functions
-    import {
-      initializeApp
-    } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-    import {
-      getAuth,
-      signInWithPopup,
-      GoogleAuthProvider,
-      onAuthStateChanged,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+
     // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyBIOLZo71m_MqtMMLYCBxSfy-ejBOtzN0I",
@@ -153,10 +146,12 @@
       messagingSenderId: "949577796525",
       appId: "1:949577796525:web:b08dcabdc6cd53eeda2f24"
     };
+
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
+
     // DOM Elements
     const loginButton = document.getElementById('login-button');
     const logoutButton = document.getElementById('logout-button');
@@ -165,6 +160,7 @@
     const userName = document.getElementById('user-name');
     const dropdownMenu = document.getElementById('dropdown-menu');
     const authSection = document.getElementById('auth-section');
+
     // Login with Google
     loginButton.addEventListener('click', () => signInWithGoogle());
 
@@ -177,6 +173,7 @@
           console.error("Login failed:", error.message);
         });
     }
+
     // Logout
     logoutButton.addEventListener('click', () => {
       signOut(auth)
@@ -187,17 +184,20 @@
           console.error("Logout failed:", error.message);
         });
     });
+
     // Toggle Dropdown Menu
     userInfo.addEventListener('click', (e) => {
       e.stopPropagation(); // Prevent event from bubbling up to window
       dropdownMenu.classList.toggle('hidden');
     });
+
     // Close dropdown when clicking outside
     window.addEventListener('click', (e) => {
       if (!authSection.contains(e.target)) {
         dropdownMenu.classList.add('hidden');
       }
     });
+
     // Handle Authentication State Changes
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -212,55 +212,8 @@
     });
   </script>
 
-  <!-- Script to Handle Module Loading with Fallback -->
-  <script>
-    /**
-     * Function to dynamically load a JavaScript module with a fallback.
-     * @param {string} toolName - The name of the tool (e.g., 'notes', 'tasks', 'timers').
-     */
-    const loadScriptWithFallback = (toolName) => {
-      // Define local and fallback URLs
-      const localURL = `modules/${toolName}.js`;
-      const publicURL = `https://garbled.link/modules/${toolName}.js`;
-
-      // Create the script element as a module
-      const script = document.createElement('script');
-      script.src = localURL;
-      script.type = 'module'; // Set as ES Module
-      script.defer = true;
-
-      // Define the onerror handler to attempt fallback
-      script.onerror = () => {
-        console.warn(`Failed to load ${localURL}. Attempting to load from fallback URL.`);
-        const fallbackScript = document.createElement('script');
-        fallbackScript.src = publicURL;
-        fallbackScript.type = 'module'; // Set as ES Module
-        fallbackScript.defer = true;
-
-        // Handle failure of fallback
-        fallbackScript.onerror = () => {
-          console.error(`Failed to load fallback script from ${publicURL}.`);
-          displayError(`Unable to load the ${toolName} tool. Please try again later.`);
-        };
-
-        // Optional: Add onload handler
-        fallbackScript.onload = () => {
-          console.log(`${toolName} fallback module loaded successfully.`);
-        };
-
-        document.body.appendChild(fallbackScript);
-      };
-
-      // Define onload handler if needed
-      script.onload = () => {
-        console.log(`${toolName} module loaded successfully.`);
-        // Optionally, call an init function if your module exports one
-      };
-
-      // Append the script to the body
-      document.body.appendChild(script);
-    };
-
+  <!-- Script to Handle Module Loading with Dynamic Import and Fallback -->
+  <script type="module">
     /**
      * Function to display an error message in the main content area.
      * @param {string} message - The error message to display.
@@ -275,15 +228,39 @@
     };
 
     /**
-     * Function to load a tool and display its content.
+     * Function to load a tool and display its content using dynamic import.
      * @param {string} toolName - The name of the tool to load.
      */
-    const loadTool = (toolName) => {
-      // Clear the main content area and show a loading message
-      const mainContent = document.getElementById('main-content');
-      mainContent.innerHTML = `<p>Loading ${toolName}...</p>`;
-      // Load the script with fallback
-      loadScriptWithFallback(toolName);
+    const loadTool = async (toolName) => {
+      try {
+        // Clear the main content area and show a loading message
+        const mainContent = document.getElementById('main-content');
+        mainContent.innerHTML = `<p>Loading ${toolName}...</p>`;
+
+        // Attempt to dynamically import the local module
+        const localModule = await import(`./modules/${toolName}.js`);
+        if (localModule && typeof localModule.init === 'function') {
+          localModule.init();
+          console.log(`${toolName} module loaded successfully from localURL.`);
+        } else {
+          console.warn(`${toolName} module does not have an init function.`);
+        }
+      } catch (error) {
+        console.warn(`Failed to load modules/${toolName}.js. Attempting to load from fallback URL.`, error);
+        try {
+          // Attempt to dynamically import the fallback module
+          const fallbackModule = await import(`https://garbled.link/modules/${toolName}.js`);
+          if (fallbackModule && typeof fallbackModule.init === 'function') {
+            fallbackModule.init();
+            console.log(`${toolName} module loaded successfully from fallbackURL.`);
+          } else {
+            console.warn(`${toolName} fallback module does not have an init function.`);
+          }
+        } catch (fallbackError) {
+          console.error(`Failed to load fallback script from https://garbled.link/modules/${toolName}.js.`, fallbackError);
+          displayError(`Unable to load the ${toolName} tool. Please try again later.`);
+        }
+      }
     };
 
     // Add event listeners to tool buttons
