@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="garbled.link - Your utility hub with tools like notes, timers, code editors, and more.">
   <meta name="author" content="garbledhamster">
 
@@ -18,12 +18,61 @@
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Custom Styles -->
+  <style>
+    /* Ensure the body takes the full viewport height and uses flex layout */
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Container for main content below the navbar */
+    .main-container {
+      display: flex;
+      flex: 1;
+      height: 100%;
+    }
+
+    /* Left Column Styling */
+    .left-column {
+      flex: 0 0 33.333%; /* 1/3 of the width */
+      background-color: #1c1c1c; /* Tailwind's bg-neutral-800 */
+      padding: 1rem;
+      overflow-y: auto; /* Optional: If content overflows */
+    }
+
+    /* Right Column Styling */
+    .right-column {
+      flex: 1;
+      background-color: #2d2d2d; /* Tailwind's bg-neutral-700 */
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+
+    /* Optional: Custom scrollbar styling for the right column */
+    .right-column::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .right-column::-webkit-scrollbar-thumb {
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+
+    .right-column {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    }
+  </style>
 </head>
 
 <body class="bg-neutral-900 text-neutral-100 font-mono">
 
   <!-- Top Navigation Bar -->
-  <nav class="bg-neutral-800 p-4 flex justify-between items-center">
+  <nav class="bg-neutral-800 p-4 flex justify-between items-center fixed top-0 left-0 right-0 z-10">
     <div class="text-xl font-bold">
       garbled.link
     </div>
@@ -52,93 +101,29 @@
     </div>
   </nav>
 
-  <div class="min-h-screen flex">
+  <!-- Main Content Container -->
+  <div class="main-container pt-16"> <!-- pt-16 to offset the fixed navbar height (4rem) -->
     <!-- Tool Selector (Left Column) -->
-    <div class="w-1/3 bg-neutral-800 p-4 rounded-md">
+    <div class="left-column">
       <h1 class="text-xl font-bold mb-4">Utility Belt</h1>
       <ul class="space-y-3">
-        <li><button class="w-full text-left hover:text-primary-500 transition">1. Notes</button></li>
-        <li><button class="w-full text-left hover:text-primary-500 transition">2. Tasks</button></li>
-        <li><button class="w-full text-left hover:text-primary-500 transition">3. Timers</button></li>
-        <li><button class="w-full text-left hover:text-primary-500 transition">4. Text Editor</button></li>
-        <li><button class="w-full text-left hover:text-primary-500 transition">5. Password Generator</button></li>
-        <li><button class="w-full text-left hover:text-primary-500 transition">6. GUID Generator</button></li>
-        <li><button class="w-full text-left hover:text-primary-500 transition">7. Code Editor</button></li>
-        <li><button class="w-full text-left hover:text-primary-500 transition">8. Code Trimmer</button></li>
+        <li><button class="tool-loader w-full text-left hover:text-blue-500 transition" data-tool="notes">1. Notes</button></li>
+        <li><button class="tool-loader w-full text-left hover:text-blue-500 transition" data-tool="tasks">2. Tasks</button></li>
+        <li><button class="tool-loader w-full text-left hover:text-blue-500 transition" data-tool="timers">3. Timers</button></li>
+        <li><button class="w-full text-left text-gray-400 cursor-not-allowed" disabled>4. Text Editor (Coming Soon)</button></li>
+        <li><button class="w-full text-left text-gray-400 cursor-not-allowed" disabled>5. Password Generator (Coming Soon)</button></li>
+        <li><button class="w-full text-left text-gray-400 cursor-not-allowed" disabled>6. GUID Generator (Coming Soon)</button></li>
+        <li><button class="w-full text-left text-gray-400 cursor-not-allowed" disabled>7. Code Editor (Coming Soon)</button></li>
+        <li><button class="w-full text-left text-gray-400 cursor-not-allowed" disabled>8. Code Trimmer (Coming Soon)</button></li>
       </ul>
     </div>
 
     <!-- Main Window (Right Column) -->
-    <div class="w-2/3 bg-neutral-700 p-6 rounded-md overflow-y-auto h-screen">
-      <h2 class="text-2xl font-bold mb-4">Showcase: Website Design</h2>
-      
-      <!-- Hero Section -->
-      <section class="mb-6 bg-neutral-600 p-6 rounded-md">
-        <h3 class="text-xl font-bold mb-2">Hero Section</h3>
-        <p class="mb-2">This is an example of a hero section, perfect for capturing user attention.</p>
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Call to Action</button>
-      </section>
-
-      <!-- Card Grid -->
-      <section class="mb-6">
-        <h3 class="text-xl font-bold mb-4">Card Grid</h3>
-        <div class="grid grid-cols-2 gap-4">
-          <div class="bg-neutral-800 p-4 rounded-md shadow-md">
-            <h4 class="font-bold mb-2">Card Title 1</h4>
-            <p>This is an example card. Use it to display short pieces of content.</p>
-          </div>
-          <div class="bg-neutral-800 p-4 rounded-md shadow-md">
-            <h4 class="font-bold mb-2">Card Title 2</h4>
-            <p>Cards can be arranged in grids for responsive layouts.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- Input Form -->
-      <section class="mb-6">
-        <h3 class="text-xl font-bold mb-4">Input Form</h3>
-        <form>
-          <div class="mb-4">
-            <label for="name" class="block mb-2">Name</label>
-            <input type="text" id="name" class="w-full p-2 bg-neutral-800 rounded-md border border-neutral-600 text-neutral-100">
-          </div>
-          <div class="mb-4">
-            <label for="email" class="block mb-2">Email</label>
-            <input type="email" id="email" class="w-full p-2 bg-neutral-800 rounded-md border border-neutral-600 text-neutral-100">
-          </div>
-          <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Submit</button>
-        </form>
-      </section>
-
-      <!-- Typography Showcase -->
-      <section class="mb-6">
-        <h3 class="text-xl font-bold mb-4">Typography</h3>
-        <p class="mb-2">This is a paragraph demonstrating the base font styles.</p>
-        <p class="italic mb-2">This is italic text.</p>
-        <p class="font-bold mb-2">This is bold text.</p>
-        <p class="text-blue-500">This is colored text.</p>
-      </section>
-
-      <!-- List Showcase -->
-      <section class="mb-6">
-        <h3 class="text-xl font-bold mb-4">Lists</h3>
-        <ul class="list-disc pl-6 mb-4">
-          <li>Unordered list item 1</li>
-          <li>Unordered list item 2</li>
-        </ul>
-        <ol class="list-decimal pl-6">
-          <li>Ordered list item 1</li>
-          <li>Ordered list item 2</li>
-        </ol>
-      </section>
-      
-      <!-- Alert Box -->
-      <section>
-        <h3 class="text-xl font-bold mb-4">Alert Box</h3>
-        <div class="bg-red-600 text-white p-4 rounded-md">
-          <strong>Alert:</strong> This is an example alert box for important messages.
-        </div>
-      </section>
+    <div class="right-column">
+      <div id="main-content">
+        <h2 class="text-2xl font-bold mb-4">Welcome to garbled.link</h2>
+        <p>Select a tool from the Utility Belt to get started.</p>
+      </div>
     </div>
   </div>
 
@@ -197,7 +182,8 @@
     });
 
     // Toggle Dropdown Menu
-    userInfo.addEventListener('click', () => {
+    userInfo.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent event from bubbling up to window
       dropdownMenu.classList.toggle('hidden');
     });
 
@@ -219,6 +205,83 @@
         userInfo.classList.add('hidden');
         loginButton.classList.remove('hidden');
       }
+    });
+  </script>
+
+  <!-- Script to Handle Module Loading with Fallback -->
+  <script>
+    /**
+     * Function to dynamically load a JavaScript module with a fallback.
+     * @param {string} toolName - The name of the tool (e.g., 'notes', 'tasks', 'timers').
+     */
+    const loadScriptWithFallback = (toolName) => {
+      // Define local and fallback URLs
+      const localURL = `./assets/modules/${toolName}.js`;
+      const publicURL = `https://garbled.link/assets/modules/${toolName}.js`;
+
+      // Create the script element
+      const script = document.createElement('script');
+      script.src = localURL;
+      script.defer = true;
+
+      // Define the onerror handler to attempt fallback
+      script.onerror = () => {
+        console.warn(`Failed to load ${localURL}. Attempting to load from fallback URL.`);
+        const fallbackScript = document.createElement('script');
+        fallbackScript.src = publicURL;
+        fallbackScript.defer = true;
+
+        // Handle failure of fallback
+        fallbackScript.onerror = () => {
+          console.error(`Failed to load fallback script from ${publicURL}.`);
+          displayError(`Unable to load the ${toolName} tool. Please try again later.`);
+        };
+
+        document.body.appendChild(fallbackScript);
+      };
+
+      // Define onload handler to initialize the tool
+      script.onload = () => {
+        // Assuming each module initializes itself upon loading
+        // Alternatively, you can implement an event or callback mechanism
+      };
+
+      // Append the script to the body
+      document.body.appendChild(script);
+    };
+
+    /**
+     * Function to display an error message in the main content area.
+     * @param {string} message - The error message to display.
+     */
+    const displayError = (message) => {
+      const mainContent = document.getElementById('main-content');
+      mainContent.innerHTML = `
+        <div class="bg-red-600 text-white p-4 rounded-md">
+          <strong>Error:</strong> ${message}
+        </div>
+      `;
+    };
+
+    /**
+     * Function to load a tool and display its content.
+     * @param {string} toolName - The name of the tool to load.
+     */
+    const loadTool = (toolName) => {
+      // Clear the main content area and show a loading message
+      const mainContent = document.getElementById('main-content');
+      mainContent.innerHTML = `<p>Loading ${toolName}...</p>`;
+
+      // Load the script with fallback
+      loadScriptWithFallback(toolName);
+    };
+
+    // Add event listeners to tool buttons
+    document.querySelectorAll('.tool-loader').forEach(button => {
+      button.addEventListener('click', () => {
+        const toolName = button.getAttribute('data-tool');
+        loadTool(toolName);
+      });
     });
   </script>
 
