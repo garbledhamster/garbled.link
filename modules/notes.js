@@ -1,88 +1,120 @@
-// modules/tasks.js
+// modules/notes.js
 export function init() {
   const mainContent = document.getElementById('main-content');
 
   // Clear existing content
   mainContent.innerHTML = '';
 
-  // Create the tasks interface
+  // Create the notes interface
   mainContent.innerHTML = `
     <div class="space-y-4">
-      <h2 class="text-2xl font-bold">Tasks</h2>
-      <div class="flex space-x-2">
-        <input id="task-input" class="flex-1 p-2 rounded-md bg-neutral-800 text-neutral-100" placeholder="Add a new task">
-        <button id="add-task-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Add
+      <h2 class="text-2xl font-bold">Notes</h2>
+      <div>
+        <button id="add-note-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Add Note
         </button>
       </div>
-      <ul id="tasks-list" class="space-y-2">
-        <!-- Tasks will be appended here -->
+      <ul id="notes-list" class="space-y-2">
+        <!-- Notes will be appended here -->
       </ul>
     </div>
   `;
 
-  // Initialize tasks array
-  let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+  // Initialize notes array
+  let notes = JSON.parse(localStorage.getItem('notes')) || [];
 
-  const tasksList = document.getElementById('tasks-list');
-  const addTaskBtn = document.getElementById('add-task-btn');
-  const taskInput = document.getElementById('task-input');
+  const notesList = document.getElementById('notes-list');
+  const addNoteBtn = document.getElementById('add-note-btn');
 
-  // Function to render tasks
-  const renderTasks = () => {
-    tasksList.innerHTML = '';
-    if (tasks.length === 0) {
-      tasksList.innerHTML = '<p class="text-gray-400">No tasks available. Add a new task to get started.</p>';
+  // Function to render notes
+  const renderNotes = () => {
+    notesList.innerHTML = '';
+    if (notes.length === 0) {
+      notesList.innerHTML = '<p class="text-gray-400">No notes available. Click "Add Note" to create one.</p>';
       return;
     }
-    tasks.forEach((task, index) => {
-      const taskItem = document.createElement('li');
-      taskItem.className = 'flex items-center bg-neutral-800 p-4 rounded-md';
-      taskItem.innerHTML = `
-        <input type="checkbox" data-index="${index}" class="mr-2" ${task.completed ? 'checked' : ''}>
-        <span class="flex-1 ${task.completed ? 'line-through text-gray-500' : ''}">${task.text}</span>
-        <button data-index="${index}" class="delete-task-btn bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</button>
+    notes.forEach((note, index) => {
+      const noteItem = document.createElement('li');
+      noteItem.className = 'bg-neutral-800 p-4 rounded-md flex justify-between items-center';
+      noteItem.innerHTML = `
+        <span class="text-lg">${note.title || 'Untitled Note'}</span>
+        <div class="space-x-2">
+          <button data-index="${index}" class="edit-note-btn bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">Edit</button>
+          <button data-index="${index}" class="delete-note-btn bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</button>
+        </div>
       `;
-      tasksList.appendChild(taskItem);
+      notesList.appendChild(noteItem);
     });
   };
 
-  // Add task event
-  addTaskBtn.addEventListener('click', () => {
-    const taskText = taskInput.value.trim();
-    if (taskText) {
-      tasks.push({ text: taskText, completed: false });
-      localStorage.setItem('tasks', JSON.stringify(tasks));
-      taskInput.value = '';
-      renderTasks();
-    } else {
-      alert('Please enter a task.');
-    }
+  // Add note event
+  addNoteBtn.addEventListener('click', () => {
+    const note = {
+      title: '',
+      content: '',
+    };
+    notes.push(note);
+    localStorage.setItem('notes', JSON.stringify(notes));
+    renderNotes();
+    editNote(notes.length - 1);
   });
 
-  // Enable adding task with Enter key
-  taskInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      addTaskBtn.click();
-    }
-  });
+  // Edit note function
+  const editNote = (index) => {
+    const note = notes[index];
+    mainContent.innerHTML = `
+      <div class="space-y-4">
+        <h2 class="text-2xl font-bold">Edit Note</h2>
+        <input id="note-title" class="w-full p-2 rounded-md bg-neutral-800 text-neutral-100" placeholder="Title" value="${note.title}">
+        <textarea id="note-content" class="w-full p-2 rounded-md bg-neutral-800 text-neutral-100 h-64" placeholder="Content">${note.content}</textarea>
+        <div class="space-x-2">
+          <button id="save-note-btn" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Save</button>
+          <button id="cancel-note-btn" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Cancel</button>
+        </div>
+      </div>
+    `;
 
-  // Event delegation for task interactions
-  tasksList.addEventListener('click', (e) => {
-    const index = e.target.getAttribute('data-index');
-    if (e.target.type === 'checkbox') {
-      tasks[index].completed = e.target.checked;
-      localStorage.setItem('tasks', JSON.stringify(tasks));
-      renderTasks();
-    } else if (e.target.classList.contains('delete-task-btn')) {
-      if (confirm('Are you sure you want to delete this task?')) {
-        tasks.splice(index, 1);
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-        renderTasks();
+    // Save note event
+    document.getElementById('save-note-btn').addEventListener('click', () => {
+      const updatedTitle = document.getElementById('note-title').value.trim();
+      const updatedContent = document.getElementById('note-content').value.trim();
+      if (updatedTitle === '' && updatedContent === '') {
+        alert('Cannot save an empty note.');
+        return;
       }
+      note.title = updatedTitle || 'Untitled Note';
+      note.content = updatedContent;
+      notes[index] = note;
+      localStorage.setItem('notes', JSON.stringify(notes));
+      init();
+    });
+
+    // Cancel editing
+    document.getElementById('cancel-note-btn').addEventListener('click', () => {
+      init();
+    });
+  };
+
+  // Delete note function
+  const deleteNote = (index) => {
+    if (confirm('Are you sure you want to delete this note?')) {
+      notes.splice(index, 1);
+      localStorage.setItem('notes', JSON.stringify(notes));
+      renderNotes();
+    }
+  };
+
+  // Event delegation for edit and delete buttons
+  notesList.addEventListener('click', (e) => {
+    if (e.target.classList.contains('edit-note-btn')) {
+      const index = e.target.getAttribute('data-index');
+      editNote(index);
+    } else if (e.target.classList.contains('delete-note-btn')) {
+      const index = e.target.getAttribute('data-index');
+      deleteNote(index);
     }
   });
 
   // Initial render
-  renderTasks();
+  renderNotes();
 }
