@@ -31,6 +31,10 @@ export function init() {
   // Function to render tasks
   const renderTasks = () => {
     tasksList.innerHTML = '';
+    if (tasks.length === 0) {
+      tasksList.innerHTML = '<p class="text-gray-400">No tasks available. Add a new task to get started.</p>';
+      return;
+    }
     tasks.forEach((task, index) => {
       const taskItem = document.createElement('li');
       taskItem.className = 'flex items-center bg-neutral-800 p-4 rounded-md';
@@ -51,6 +55,15 @@ export function init() {
       localStorage.setItem('tasks', JSON.stringify(tasks));
       taskInput.value = '';
       renderTasks();
+    } else {
+      alert('Please enter a task.');
+    }
+  });
+
+  // Enable adding task with Enter key
+  taskInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      addTaskBtn.click();
     }
   });
 
@@ -62,9 +75,11 @@ export function init() {
       localStorage.setItem('tasks', JSON.stringify(tasks));
       renderTasks();
     } else if (e.target.classList.contains('delete-task-btn')) {
-      tasks.splice(index, 1);
-      localStorage.setItem('tasks', JSON.stringify(tasks));
-      renderTasks();
+      if (confirm('Are you sure you want to delete this task?')) {
+        tasks.splice(index, 1);
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        renderTasks();
+      }
     }
   });
 
