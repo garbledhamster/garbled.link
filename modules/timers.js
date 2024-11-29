@@ -1,85 +1,164 @@
-// modules/timers.js
-export function init() {
-  const mainContent = document.getElementById('main-content');
+// modules/notes.js
 
-  // Clear existing content
-  mainContent.innerHTML = '';
-
-  // Create the timers interface
-  mainContent.innerHTML = `
-    <div class="space-y-6 text-center">
-      <h2 class="text-2xl font-bold">Timer</h2>
-      <div id="timer-display" class="text-6xl font-mono">00:00:00</div>
-      <div class="space-x-4">
-        <button id="start-timer-btn" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-          Start
-        </button>
-        <button id="pause-timer-btn" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded" disabled>
-          Pause
-        </button>
-        <button id="reset-timer-btn" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" disabled>
-          Reset
-        </button>
+/**
+ * Initializes the Notes tool by rendering its UI components.
+ * @param {HTMLElement} container - The main content container where the tool will be rendered.
+ */
+export function initTool(container) {
+  // Check if Firebase Auth is available
+  if (!window.auth) {
+    container.innerHTML = `
+      <div class="bg-red-600 text-white p-4 rounded-md">
+        <strong>Error:</strong> Firebase Authentication is not initialized. Please ensure you are logged in.
       </div>
-    </div>
-  `;
+    `;
+    return;
+  }
 
-  let timerInterval;
-  let elapsedTime = 0;
-  let isRunning = false;
+  // Reference to the auth instance
+  const auth = window.auth;
 
-  const timerDisplay = document.getElementById('timer-display');
-  const startBtn = document.getElementById('start-timer-btn');
-  const pauseBtn = document.getElementById('pause-timer-btn');
-  const resetBtn = document.getElementById('reset-timer-btn');
+  // Function to render the Notes UI
+  const renderNotesUI = (user) => {
+    // Unique key for storing notes per user
+    const storageKey = `notes_${user.uid}`;
 
-  // Function to update the timer display
-  const updateDisplay = () => {
-    const totalSeconds = Math.floor(elapsedTime / 1000);
-    const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
-    const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
-    const seconds = String(totalSeconds % 60).padStart(2, '0');
-    timerDisplay.textContent = `${hours}:${minutes}:${seconds}`;
+    // Retrieve notes from localStorage
+    const savedNotes = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+    // HTML structure for Notes tool
+    container.innerHTML = `
+      <h2 class="text-2xl font-bold mb-4">Notes</h2>
+      <div class="mb-4 flex">
+        <input type="text" id="new-note-input" class="flex-1 p-2 bg-neutral-800 rounded-l-md border border-neutral-600 text-neutral-100" placeholder="Enter a new note">
+        <button id="add-note-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r-md">Add Note</button>
+      </div>
+      <ul id="notes-list" class="space-y-2">
+        ${savedNotes.map((note, index) => `
+          <li class="flex justify-between items-center bg-neutral-800 p-2 rounded-md">
+            <span>${escapeHTML(note)}</span>
+            <button data-index="${index}" class="remove-note-button bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Remove</button>
+          </li>
+        `).join('')}
+      </ul>
+    `;
+
+    // DOM Elements
+    const addNoteButton = document.getElementById('add-note-button');
+    const newNoteInput = document.getElementById('new-note-input');
+    const notesList = document.getElementById('notes-list');
+
+    // Function to escape HTML to prevent XSS
+    function escapeHTML(str) {
+      return str.replace(/[&<>'"]/g, (tag) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;',
+      }[tag]));
+    }
+
+    // Function to save notes to localStorage
+    const saveNotes = (notes) => {
+      localStorage.setItem(storageKey, JSON.stringify(notes));
+    };
+
+    // Function to add a new note
+    const addNote = () => {
+      const noteText = newNoteInput.value.trim();
+      if (noteText === '') {
+        alert('Please enter a note.');
+        return;
+      }
+
+      // Retrieve current notes
+      const currentNotes = JSON.parse(localStorage.getItem(storageKey)) || [];
+      currentNotes.push(noteText);
+      saveNotes(currentNotes);
+
+      // Append the new note to the UI
+      const newNoteElement = document.createElement('li');
+      newNoteElement.className = 'flex justify-between items-center bg-neutral-800 p-2 rounded-md';
+      newNoteElement.innerHTML = `
+        <span>${escapeHTML(noteText)}</span>
+        <button data-index="${currentNotes.length - 1}" class="remove-note-button bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Remove</button>
+      `;
+      notesList.appendChild(newNoteElement);
+
+      // Clear the input field
+      newNoteInput.value = '';
+    };
+
+    // Function to remove a note
+    const removeNote = (index) => {
+      // Retrieve current notes
+      let currentNotes = JSON.parse(localStorage.getItem(storageKey)) || [];
+      if (index < 0 || index >= currentNotes.length) return;
+
+      // Remove the note from the array
+      currentNotes.splice(index, 1);
+      saveNotes(currentNotes);
+
+      // Re-render the notes list
+      renderNotesUI(user);
+    };
+
+    // Event Listener for Add Note button
+    addNoteButton.addEventListener('click', addNote);
+
+    // Event Listener for Enter key on input field
+    newNoteInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        addNote();
+      }
+    });
+
+    // Event Delegation for Remove Note buttons
+    notesList.addEventListener('click', (e) => {
+      if (e.target && e.target.matches('button.remove-note-button')) {
+        const index = parseInt(e.target.getAttribute('data-index'), 10);
+        if (!isNaN(index)) {
+          removeNote(index);
+        }
+      }
+    });
   };
 
-  // Start timer event
-  startBtn.addEventListener('click', () => {
-    if (!isRunning) {
-      isRunning = true;
-      const startTime = Date.now() - elapsedTime;
-      timerInterval = setInterval(() => {
-        elapsedTime = Date.now() - startTime;
-        updateDisplay();
-      }, 1000);
-      startBtn.disabled = true;
-      pauseBtn.disabled = false;
-      resetBtn.disabled = false;
+  // Function to render access denied message
+  const renderAccessDenied = () => {
+    container.innerHTML = `
+      <div class="bg-red-600 text-white p-4 rounded-md">
+        <strong>Access Denied:</strong> Please log in to access your notes.
+      </div>
+    `;
+  };
+
+  // Initial Render based on Authentication State
+  const initialUser = auth.currentUser;
+  if (initialUser) {
+    renderNotesUI(initialUser);
+  } else {
+    renderAccessDenied();
+  }
+
+  // Listen for Authentication State Changes
+  auth.onAuthStateChanged((user) => {
+    if (user) {
+      renderNotesUI(user);
+    } else {
+      renderAccessDenied();
     }
   });
-
-  // Pause timer event
-  pauseBtn.addEventListener('click', () => {
-    if (isRunning) {
-      isRunning = false;
-      clearInterval(timerInterval);
-      startBtn.disabled = false;
-      pauseBtn.disabled = true;
-    }
-  });
-
-  // Reset timer event
-  resetBtn.addEventListener('click', () => {
-    if (confirm('Are you sure you want to reset the timer?')) {
-      isRunning = false;
-      clearInterval(timerInterval);
-      elapsedTime = 0;
-      updateDisplay();
-      startBtn.disabled = false;
-      pauseBtn.disabled = true;
-      resetBtn.disabled = true;
-    }
-  });
-
-  // Initialize display
-  updateDisplay();
 }
+
+/**
+ * Automatically initialize the tool when the script is loaded.
+ * Ensures that the tool is initialized only when its script is loaded dynamically.
+ */
+document.addEventListener('DOMContentLoaded', () => {
+  const container = document.getElementById('main-content');
+  if (container) {
+    initTool(container);
+  }
+});
