@@ -69,12 +69,17 @@ export function init() {
 
   // Reset timer event
   resetBtn.addEventListener('click', () => {
-    isRunning = false;
-    clearInterval(timerInterval);
-    elapsedTime = 0;
-    updateDisplay();
-    startBtn.disabled = false;
-    pauseBtn.disabled = true;
-    resetBtn.disabled = true;
+    if (confirm('Are you sure you want to reset the timer?')) {
+      isRunning = false;
+      clearInterval(timerInterval);
+      elapsedTime = 0;
+      updateDisplay();
+      startBtn.disabled = false;
+      pauseBtn.disabled = true;
+      resetBtn.disabled = true;
+    }
   });
+
+  // Initialize display
+  updateDisplay();
 }
