@@ -1,237 +1,501 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="garbled.link - Your utility hub with tools like notes, timers, code editors, and more.">
-  <meta name="author" content="garbledhamster">
-
-  <!-- Favicons -->
-  <link rel="icon" href="https://garbled.link/assets/images/icons/favicon-16x16.png" sizes="16x16" type="image/png">
-  <link rel="icon" href="https://garbled.link/assets/images/icons/favicon-32x32.png" sizes="32x32" type="image/png">
-  <link rel="icon" href="https://garbled.link/assets/images/icons/android-chrome-192x192.png" sizes="192x192" type="image/png">
-  <link rel="apple-touch-icon" href="https://garbled.link/assets/images/icons/apple-touch-icon.png">
-  <link rel="manifest" href="https://garbled.link/manifest.json">
-
   <title>garbled.link</title>
+  
+  <!-- Favicon and Apple Touch Icons -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/images/icons/site.webmanifest">
+  <link rel="mask-icon" href="/assets/images/icons/safari-pinned-tab.svg" color="#00d1ff">
+  <link rel="shortcut icon" href="/assets/images/icons/favicon.ico">
+  <meta name="msapplication-TileColor" content="#00d1ff">
+  <meta name="msapplication-config" content="/assets/images/icons/browserconfig.xml">
+  <meta name="theme-color" content="#0D0D0D">
+  
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="garbled.link" />
+  <meta property="og:description" content="A hub to link all of my published sites, including tools, connections, personal projects, blogs, and restaurants." />
+  <meta property="og:url" content="https://garbled.link" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://garbled.link/assets/images/icons/android-chrome-512x512.png" />
+  <meta property="og:site_name" content="garbled.link" />
+  
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="garbled.link" />
+  <meta name="twitter:description" content="A hub to link all of my published sites, including tools, connections, personal projects, blogs, and restaurants." />
+  <meta name="twitter:image" content="https://garbled.link/assets/images/icons/android-chrome-512x512.png" />
+  <meta name="twitter:site" content="@YourTwitterHandle" />
+  <meta name="twitter:creator" content="@YourTwitterHandle" />
+  
+  <!-- Basic Meta Tags -->
+  <meta name="description" content="garbled.link is a centralized hub linking all my published sites, including tools, connections, personal projects, blogs, and restaurants. Explore my diverse range of online projects in one place." />
+  
+  <!-- Language and Locale -->
+  <meta http-equiv="Content-Language" content="en">
+  <meta name="language" content="English">
+  <meta name="author" content="Your Name">
+  
+  <!-- Google Fonts for Monospaced Brutalist Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+  
 
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Font Consistency */
+    html,
+    body {
+      font-family: 'Roboto Mono', monospace;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      min-width: 450px;
+    }
+
+    body {
+      background-color: #0D0D0D;
+      /* Deep Black */
+      color: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Pulsing Border Animation */
+    @keyframes pulseBorder {
+      0% {
+        border-color: #00d1ff;
+      }
+
+      /* Bright Blue */
+      14.28% {
+        border-color: #C41E3A;
+      }
+
+      /* Subdued Red */
+      28.56% {
+        border-color: #FFD700;
+      }
+
+      /* Yellow */
+      42.84% {
+        border-color: #FF1493;
+      }
+
+      /* Rose */
+      57.12% {
+        border-color: #32CD32;
+      }
+
+      /* Green */
+      71.4% {
+        border-color: #8A2BE2;
+      }
+
+      /* Purple */
+      85.68% {
+        border-color: #FFFFFF;
+      }
+
+      /* White */
+      100% {
+        border-color: #00d1ff;
+      }
+
+      /* Bright Blue */
+    }
+
+    .title-banner {
+      background-color: #2E2E2E;
+      /* Slate Gray */
+      color: #FFFFFF;
+      padding: 20px;
+      text-align: center;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+      min-width: 450px;
+      border-bottom: 3px solid;
+      /* Initial border color set by animation */
+      animation: pulseBorder 28s linear infinite;
+    }
+
+    .title-banner h1 {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 3rem;
+      margin: 0;
+      color: #FFFFFF;
+    }
+
+    .title-banner p {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 1.2rem;
+      margin-top: 10px;
+      color: #FFFFFF;
+    }
+
+    .demo-toggle-btn {
+      z-index: 10000;
+      background: transparent;
+      /* Subdued Red */
+      color: #FFFFFF;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      width: 10rem;
+      margin: 20px auto;
+      display: block;
+      position: relative;
+      cursor: pointer;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 1rem;
+    }
+
+    /* Navbar Toggler */
+    .navbar-toggler {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: none;
+      border: none;
+      color: #00d1ff;
+      /* Subdued Yellow */
+      padding: 10px;
+      font-size: 1.5rem;
+      z-index: 1100;
+      cursor: pointer;
+      transition: transform 0.3s ease-in-out, color 0.3s ease;
+    }
+
+    .navbar-toggler.open {
+      transform: rotate(90deg);
+      color: #C41E3A;
+      /* Red when open */
+    }
+
+    /* Navigation Menu */
+    .nav-menu {
+      background-color: #1E1E1E;
+      /* Slightly Lighter Slate */
+      z-index: 1000;
+      position: fixed;
+      top: 80px;
+      /* Below the title-banner */
+      left: 0;
+      height: calc(100% - 80px);
+      /* Adjust height to avoid overlapping footer */
+      width: 250px;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease-in-out;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-menu.show {
+      transform: translateX(0);
+    }
+
+    .menu-list a {
+      display: block;
+      color: #32CD32;
+      /* Purple */
+      padding: 10px;
+      text-decoration: none;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 1rem;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .menu-list a:hover {
+      background-color: #8A2BE2;
+      /* Subdued Rose on Hover */
+      color: #FFFFFF;
+    }
+
+    .menu-list div {
+      padding: 10px;
+      font-weight: bold;
+      border-top: 1px solid #FFD700;
+      /* Yellow Border Top */
+      border-bottom: 1px solid #FFD700;
+      /* Yellow Border Bottom */
+      margin-top: 10px;
+      color: #FF1493;
+      /* Green */
+      font-family: 'Roboto Mono', monospace;
+    }
+
+    .body-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+      padding: 20px;
+      z-index: 0;
+      background-color: #0D0D0D;
+      /* Deep Black */
+    }
+
+    .cover,
+    iframe {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+    }
+
+    .cover {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: #0D0D0D;
+      /* Deep Black */
+      color: #FFFFFF;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .md-content {
+      padding: 20px;
+      max-width: 800px;
+      text-align: center;
+      font-family: 'Roboto Mono', monospace;
+      color: #FFFFFF;
+    }
+
+    iframe {
+      border: none;
+      display: none;
+      /* Initially hidden */
+      background-color: #0D0D0D;
+      /* Deep Black */
+    }
+
+    footer {
+      background-color: #2E2E2E;
+      /* Slate Gray */
+      text-align: center;
+      padding: 20px 0;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+      border-top: 3px solid;
+      /* Initial border color set by animation */
+      animation: pulseBorder 28s linear infinite;
+    }
+
+    /* Footer Link Styling */
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    .footer-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #FFFFFF;
+      text-decoration: none;
+      margin: 0 10px;
+      font-family: 'Roboto Mono', monospace;
+      transition: color 0.3s ease;
+    }
+
+    .footer-link i {
+      margin-bottom: 5px;
+      width: 24px;
+      height: 24px;
+      color: #FFFFFF;
+    }
+
+    .footer-link:hover {
+      color: #FF4500;
+      /* Subdued Orange Red on Hover */
+    }
+
+    /* Scrollbar Styling */
+    /* WebKit */
+    .nav-menu::-webkit-scrollbar,
+    .body-content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .nav-menu::-webkit-scrollbar-track,
+    .body-content::-webkit-scrollbar-track {
+      background: #111111;
+    }
+
+    .nav-menu::-webkit-scrollbar-thumb,
+    .body-content::-webkit-scrollbar-thumb {
+      background-color: #555555;
+      border-radius: 4px;
+    }
+
+    /* Firefox */
+    .nav-menu,
+    .body-content {
+      scrollbar-width: thin;
+      scrollbar-color: #555555 #111111;
+    }
+
+    /* Responsive Styles */
+    @media (min-width: 992px) {
+      .nav-menu {
+        top: 80px;
+        height: calc(100% - 80px);
+      }
+    }
+
+    @media (max-width: 991.98px) {
+      .nav-menu {
+        top: 80px;
+        height: calc(100% - 80px);
+      }
+    }
+  </style>
+  <!-- Feather Icons Script -->
+  <script src="https://unpkg.com/feather-icons"></script>
 </head>
-<body class="bg-neutral-900 text-neutral-100 font-mono h-screen flex flex-col">
 
-  <!-- Top Navigation Bar -->
-  <nav class="bg-neutral-800 p-4 flex justify-between items-center fixed top-0 left-0 right-0 z-10">
-    <div class="text-xl font-bold">
-      garbled.link
-    </div>
-    <div id="auth-section" class="relative">
-      <!-- When Logged Out -->
-      <button id="login-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-        Login
-      </button>
+<body>
+  <div class="title-banner">
+    <h1 class="text-4xl">garbled.link</h1>
+    <p class="mt-2">A place to link all of my published sites.</p>
+  </div>
 
-      <!-- When Logged In -->
-      <div id="user-info" class="hidden flex items-center space-x-2 cursor-pointer">
-        <img id="user-photo" src="" alt="User Photo" class="w-8 h-8 rounded-full">
-        <span id="user-name"></span>
-        <!-- Dropdown Icon -->
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M19 9l-7 7-7-7"></path>
-        </svg>
-      </div>
+  <button class="demo-toggle-btn" id="demo-toggle-btn" onclick="showDemo()">Show Demo</button>
 
-      <!-- Dropdown Menu -->
-      <div id="dropdown-menu" class="absolute right-0 mt-2 w-32 bg-neutral-700 rounded-md shadow-lg hidden">
-        <button id="logout-button" class="w-full text-left px-4 py-2 hover:bg-neutral-600 rounded-t-md">Logout</button>
-      </div>
+  <button class="navbar-toggler" id="navbar-toggler" aria-label="Toggle navigation" onclick="toggleNavMenu()">
+    <i data-feather="menu"></i>
+  </button>
+
+  <nav class="nav-menu" id="nav-menu">
+    <div class="menu-list" id="menuContent">
+
+      <!-- Tools Category -->
+      <div><strong>Tool</strong></div>
+      <a href="#" onclick="selectProject('brutaltrimmer.xyz', 'https://brutaltrimmer.xyz')">brutaltrimmer.xyz</a>
+
+      <!-- Connections Category (.link domains) -->
+      <div><strong>Connections</strong></div>
+      <a href="#" onclick="selectProject('compassai.link', 'https://compassai.link')">compassai.link</a>
+      <a href="#" onclick="selectProject('denturecare.link', 'https://denturecare.link')">denturecare.link</a>
+      <a href="#" onclick="selectProject('expandedmind.link', 'https://expandedmind.link')">expandedmind.link</a>
+      <a href="#" onclick="selectProject('somaticjourney.link', 'https://somaticjourney.link')">somaticjourney.link</a>
+
+      <!-- Personal Category (.me domains) -->
+      <div><strong>Personal</strong></div>
+      <a href="#" onclick="selectProject('jknilans.me', 'https://jknilans.me')">jknilans.me</a>
+      <a href="#" onclick="selectProject('joerice.me', 'https://joerice.me')">joerice.me</a>
+      <a href="#" onclick="selectProject('naefurgerson.me', 'https://naefurgerson.me')">naefurgerson.me</a>
+
+      <!-- Blogs Category (.blog domains) -->
+      <div><strong>Blogs</strong></div>
+      <a href="#" onclick="selectProject('joesaverage.blog', 'https://joesaverage.blog')">joesaverage.blog</a>
+
+      <!-- Restaurants Category (.pizza domain) -->
+      <div><strong>Restaurants</strong></div>
+      <a href="#" onclick="selectProject('spinners.pizza', 'https://spinners.pizza')">spinners.pizza</a>
+
     </div>
   </nav>
 
-  <!-- Main Content Container -->
-  <div class="flex flex-grow h-full pt-16">
-    <!-- Tool Selector (Left Column) -->
-    <div class="w-1/3 bg-neutral-800 p-4 overflow-y-auto">
-      <h1 class="text-xl font-bold mb-4">Utility Belt</h1>
-      <ul class="space-y-3">
-        <li><button class="tool-loader w-full text-left hover:text-blue-500 transition" data-tool="notes">1. Notes</button></li>
-        <li><button class="tool-loader w-full text-left hover:text-blue-500 transition" data-tool="tasks">2. Tasks</button></li>
-        <li><button class="tool-loader w-full text-left hover:text-blue-500 transition" data-tool="timers">3. Timers</button></li>
-        <li><button class="w-full text-left text-gray-400 cursor-not-allowed" disabled>4. Text Editor (Coming Soon)</button></li>
-        <li><button class="w-full text-left text-gray-400 cursor-not-allowed" disabled>5. Password Generator (Coming Soon)</button></li>
-        <li><button class="w-full text-left text-gray-400 cursor-not-allowed" disabled>6. GUID Generator (Coming Soon)</button></li>
-        <li><button class="w-full text-left text-gray-400 cursor-not-allowed" disabled>7. Code Editor (Coming Soon)</button></li>
-        <li><button class="w-full text-left text-gray-400 cursor-not-allowed" disabled>8. Code Trimmer (Coming Soon)</button></li>
-      </ul>
-    </div>
-
-    <!-- Main Window (Right Column) -->
-    <div class="flex-1 bg-neutral-700 p-6 overflow-y-auto">
-      <div id="main-content">
-        <h2 class="text-2xl font-bold mb-4">Welcome to garbled.link</h2>
-        <p>Select a tool from the Utility Belt to get started.</p>
+  <div class="body-content" id="body-content">
+    <div class="cover" id="cover">
+      <div class="md-content" id="md-content">
+        <h2>Welcome to garbled.link</h2>
+        <p>Select a project from the navigation menu and click "Show Demo" to view it.</p>
       </div>
     </div>
+    <iframe id="iframe-app"></iframe>
   </div>
 
-  <!-- Firebase Authentication Script -->
-  <script type="module">
-    // Import Firebase functions
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+  <footer>
+    <ul class="footer-links">
+      <li>
+        <a href="https://linkedin-placeholder.com" target="_blank" class="footer-link">
+          <i data-feather="linkedin"></i>
+          LinkedIn
+        </a>
+      </li>
+      <li>
+        <a href="https://buymeacoffee-placeholder.com" target="_blank" class="footer-link">
+          <i data-feather="coffee"></i>
+          Buy Me a Coffee
+        </a>
+      </li>
+      <li>
+        <a href="https://github-placeholder.com" target="_blank" class="footer-link">
+          <i data-feather="github"></i>
+          GitHub
+        </a>
+      </li>
+      <li>
+        <a href="https://codepen-placeholder.com" target="_blank" class="footer-link">
+          <i data-feather="codepen"></i>
+          CodePen
+        </a>
+      </li>
+      <li>
+        <a href="https://instagram-placeholder.com" target="_blank" class="footer-link">
+          <i data-feather="instagram"></i>
+          Instagram
+        </a>
+      </li>
+    </ul>
+  </footer>
 
-    // Firebase configuration
-    const firebaseConfig = {
-      apiKey: "YOUR_FIREBASE_API_KEY",
-      authDomain: "YOUR_FIREBASE_AUTH_DOMAIN",
-      projectId: "YOUR_FIREBASE_PROJECT_ID",
-      storageBucket: "YOUR_FIREBASE_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_FIREBASE_MESSAGING_SENDER_ID",
-      appId: "YOUR_FIREBASE_APP_ID"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth();
-    const provider = new GoogleAuthProvider();
-
-    // Expose auth globally
-    window.auth = auth;
-
-    // DOM Elements
-    const loginButton = document.getElementById('login-button');
-    const logoutButton = document.getElementById('logout-button');
-    const userInfo = document.getElementById('user-info');
-    const userPhoto = document.getElementById('user-photo');
-    const userName = document.getElementById('user-name');
-    const dropdownMenu = document.getElementById('dropdown-menu');
-    const authSection = document.getElementById('auth-section');
-
-    // Login with Google
-    loginButton.addEventListener('click', () => signInWithGoogle());
-
-    function signInWithGoogle() {
-      signInWithPopup(auth, provider)
-        .then((result) => {
-          console.log("Logged in as:", result.user.displayName);
-        })
-        .catch((error) => {
-          console.error("Login failed:", error.message);
-        });
-    }
-
-    // Logout
-    logoutButton.addEventListener('click', () => {
-      signOut(auth)
-        .then(() => {
-          console.log("User signed out.");
-        })
-        .catch((error) => {
-          console.error("Logout failed:", error.message);
-        });
-    });
-
-    // Toggle Dropdown Menu
-    userInfo.addEventListener('click', (e) => {
-      e.stopPropagation(); // Prevent event from bubbling up to window
-      dropdownMenu.classList.toggle('hidden');
-    });
-
-    // Close dropdown when clicking outside
-    window.addEventListener('click', (e) => {
-      if (!authSection.contains(e.target)) {
-        dropdownMenu.classList.add('hidden');
-      }
-    });
-
-    // Handle Authentication State Changes
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        userPhoto.src = user.photoURL;
-        userName.textContent = user.displayName;
-        userInfo.classList.remove('hidden');
-        loginButton.classList.add('hidden');
-      } else {
-        userInfo.classList.add('hidden');
-        loginButton.classList.remove('hidden');
-      }
-    });
-  </script>
-
-  <!-- Script to Handle Module Loading with Fallback -->
   <script>
-    /**
-     * Function to dynamically load a JavaScript module with a fallback.
-     * @param {string} toolName - The name of the tool (e.g., 'notes', 'tasks', 'timers').
-     */
-    const loadScriptWithFallback = (toolName) => {
-      // Define local and fallback URLs
-      const localURL = `/modules/${toolName}.js`;
-      const publicURL = `https://garbled.link/modules/${toolName}.js`;
-
-      // Create the script element
-      const script = document.createElement('script');
-      script.src = localURL;
-      script.defer = true;
-      script.type = 'module';
-
-      // Define the onerror handler to attempt fallback
-      script.onerror = () => {
-        console.warn(`Failed to load ${localURL}. Attempting to load from fallback URL.`);
-        const fallbackScript = document.createElement('script');
-        fallbackScript.src = publicURL;
-        fallbackScript.defer = true;
-        fallbackScript.type = 'module';
-
-        // Handle failure of fallback
-        fallbackScript.onerror = () => {
-          console.error(`Failed to load fallback script from ${publicURL}.`);
-          displayError(`Unable to load the ${toolName} tool. Please try again later.`);
-        };
-
-        document.body.appendChild(fallbackScript);
-      };
-
-      // Append the script to the body
-      document.body.appendChild(script);
-    };
-
-    /**
-     * Function to display an error message in the main content area.
-     * @param {string} message - The error message to display.
-     */
-    const displayError = (message) => {
-      const mainContent = document.getElementById('main-content');
-      mainContent.innerHTML = `
-        <div class="bg-red-600 text-white p-4 rounded-md">
-          <strong>Error:</strong> ${message}
-        </div>
-      `;
-    };
-
-    /**
-     * Function to load a tool and display its content.
-     * @param {string} toolName - The name of the tool to load.
-     */
-    const loadTool = (toolName) => {
-      // Clear the main content area and show a loading message
-      const mainContent = document.getElementById('main-content');
-      mainContent.innerHTML = `<p>Loading ${toolName}...</p>`;
-
-      // Load the script with fallback
-      loadScriptWithFallback(toolName);
-    };
-
-    // Add event listeners to tool buttons
-    document.querySelectorAll('.tool-loader').forEach(button => {
-      button.addEventListener('click', () => {
-        const toolName = button.getAttribute('data-tool');
-        loadTool(toolName);
-      });
-    });
+    // Initialize Feather Icons
+    feather.replace();
+    let selectedTitle = '';
+    let selectedURL = '';
+    // Toggle Navigation Menu
+    function toggleNavMenu() {
+      const navMenu = document.getElementById('nav-menu');
+      const toggler = document.getElementById('navbar-toggler');
+      navMenu.classList.toggle('show');
+      toggler.classList.toggle('open');
+    }
+    // Select a Project
+    function selectProject(title, url) {
+      selectedTitle = title;
+      selectedURL = url;
+      const mdContent = document.getElementById('md-content');
+      mdContent.innerHTML = `<h2>${title}</h2><p>Project selected. Click "Show Demo" to view.</p>`;
+      // Hide iframe and show cover
+      const cover = document.getElementById('cover');
+      const iframe = document.getElementById('iframe-app');
+      iframe.style.display = 'none';
+      cover.style.display = 'flex';
+      // Close the nav menu after selection
+      toggleNavMenu();
+    }
+    // Show Demo
+    function showDemo() {
+      if (selectedURL) {
+        const cover = document.getElementById('cover');
+        const iframe = document.getElementById('iframe-app');
+        cover.style.display = 'none';
+        iframe.style.display = 'block';
+        iframe.src = selectedURL;
+      } else {
+        alert('Please select a project from the menu first.');
+      }
+    }
   </script>
-
 </body>
+
 </html>
