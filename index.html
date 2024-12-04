@@ -6,6 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
   <title>garbled.link</title>
 
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="garbled.link">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-startup-image" href="assets/images/icons/splash-640x1136.png" media="(device-width: 320px)">
+<link rel="apple-touch-startup-image" href="assets/images/icons/splash-750x1334.png" media="(device-width: 375px)">
+<link rel="apple-touch-startup-image" href="assets/images/icons/splash-1125x2436.png" media="(device-width: 375px) and (-webkit-device-pixel-ratio: 3)">
+<link rel="apple-touch-startup-image" href="assets/images/icons/splash-1242x2208.png" media="(device-width: 414px)">
+<link rel="apple-touch-startup-image" href="assets/images/icons/splash-1242x2688.png" media="(device-width: 414px) and (-webkit-device-pixel-ratio: 3)">
+
+
   <!-- Favicon and Apple Touch Icons -->
   <link rel="apple-touch-icon" sizes="180x180" href="assets/images/icons/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/images/icons/favicon-32x32.png">
@@ -501,6 +512,13 @@ footer {
 
     // Add a resize event listener
     window.addEventListener('resize', adjustViewportHeight);
+    if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+        console.log('Service Worker registered with scope:', registration.scope);
+    }).catch(function(error) {
+        console.log('Service Worker registration failed:', error);
+    });
+}
 
   </script>
 </body>
