@@ -62,37 +62,9 @@ garbled.link/
 
 ---
 
-## 🤝 **Contributing**
-
-We welcome contributions! If you’d like to help improve **garbled.link**, follow these steps:
-
-1. **Fork** the repository.
-2. Create a new branch:
-   ```bash
-   git checkout -b feature-name
-   ```
-3. Make your changes and **commit**:
-   ```bash
-   git commit -m "Description of changes"
-   ```
-4. Push your branch:
-   ```bash
-   git push origin feature-name
-   ```
-5. Submit a **pull request**.
-
----
-
 ## ⚖️ **License**
 
 This project is licensed under the [MIT License](LICENSE).
-
----
-
-## 📞 **Contact**
-
-- **Project Owner**: [garbledhamster](https://github.com/garbledhamster)  
-- **Website**: [garbled.link](https://garbled.link)
 
 ---
 
