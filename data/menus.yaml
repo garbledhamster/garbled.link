@@ -1,0 +1,100 @@
+leftMenu:
+  - category: "Tool 🛠️"
+    items:
+      - label: "brutaltrimmer.xyz"
+        url: "https://brutaltrimmer.xyz"
+        description: "A simple text trimming tool to keep writing neat. We snip off extra text so you can focus on clarity and brevity."
+      - label: "rotators.xyz"
+        url: "https://rotators.xyz"
+        description: "Spinning your text, images, or ideas? rotators.xyz helps cycle through concepts or assets with ease!"
+
+  - category: "Links 🔗"
+    items:
+      - label: "compassai.link"
+        url: "https://compassai.link"
+        description: "This site acts as a directional AI tool—a compass for your brainstorming and creative explorations."
+      - label: "denturecare.link"
+        url: "https://denturecare.link"
+        description: "A caretaker’s approach to denture upkeep. It’s about improving the quality of life through clear instructions and support."
+      - label: "expandedmind.link"
+        url: "https://expandedmind.link"
+        description: "A place for expanding horizons, from random thoughts to deep dives in mental models and well-being."
+      - label: "somaticjourney.link"
+        url: "https://somaticjourney.link"
+        description: "Exploring mind-body connections and self-awareness on a personal somatic healing journey."
+      - label: "thepioneers.link"
+        url: "https://thepioneers.link"
+        description: "Collective stories of those forging new paths—innovators, explorers, and relentless dreamers."
+      - label: "giraffelife.link"
+        url: "https://giraffelife.link"
+        description: "Inspired by Nonviolent Communication 🦒 — Tuning in to empathy, connection, and peaceful dialogue."
+
+  - category: "Personal 💁‍♂️"
+    items:
+      - label: "joerice.me"
+        url: "https://joerice.me"
+        description: "My personal homepage—thoughts, reflections, and an evolving record of growth."
+      - label: "joesaverage.blog"
+        url: "https://joesaverage.blog"
+        description: "A personal blog where 'average' means honest and down-to-earth takes on life."
+      - label: "garbled.link"
+        url: "https://garbled.link"
+        description: "The epicenter of all my experiments—a 'hub' that connects everything together."
+
+  - category: "Friends 🏠"
+    items:
+      - label: "jknilans.me"
+        url: "https://jknilans.me"
+        description: "A friend’s personal domain, capturing their unique perspective on coding and creativity."
+      - label: "nathanh.me"
+        url: "https://nathanh.me"
+        description: "Another friend’s portfolio—ideas on design, art, and their approach to problem-solving."
+      - label: "vivverner.me"
+        url: "https://vivverner.me"
+        description: "Showcasing work and experiences from an awesome collaborator on multiple side-projects."
+      - label: "clevelanthrip.me"
+        url: "https://clevelanthrip.me"
+        description: "A personal journey of a friend exploring spiritual growth, technology, and everything in between."
+
+  - category: "Family 👨‍👩‍👧‍👦"
+    items:
+      - label: "naefurgerson.me"
+        url: "https://naefurgerson.me"
+        description: "A cherished family member’s domain, celebrating stories, memories, and supportive links."
+      - label: "edfurgerson.me"
+        url: "https://edfurgerson.me"
+        description: "A close relative’s online space—a window into their life, experiences, and shared adventures."
+
+  - category: "Shops 🛍️"
+    items:
+      - label: "zettelkasten.shop"
+        url: "https://zettelkasten.shop"
+        description: "Products and tools for note-taking and knowledge management, combining form and function."
+      - label: "jdhogfarm.com"
+        url: "https://jdhogfarm.com"
+        description: "Down-to-earth farming meets online presence—hog raising, stories, and farm-to-table connections."
+
+  - category: "Restaurants 🍕"
+    items:
+      - label: "spinners.pizza"
+        url: "https://spinners.pizza"
+        description: "A local pizza spot experiment, focusing on creative toppings and a fun, spin-theming vibe."
+
+rightMenu:
+  - category: "Quick Links ⚡"
+    items:
+      - label: "microsoft.com"
+        url: "https://www.microsoft.com"
+      - label: "bleepingcomputer.com"
+        url: "https://www.bleepingcomputer.com"
+      - label: "slashdot.org"
+        url: "https://slashdot.org"
+      - label: "r/netsec"
+        url: "https://www.reddit.com/r/netsec"
+      - label: "stack overflow"
+        url: "https://www.stackoverflow.com"
+
+  - category: "Work 💼"
+    items:
+      - label: "Computers Nationwide"
+        url: "https://computersnationwide.com"
